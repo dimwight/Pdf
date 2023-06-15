@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="icons">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/xtra/icons.jar!/" />
+      <root url="file://$PROJECT_DIR$/../Facets" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Facets/src" />
+    </SOURCES>
+  </library>
+</component>
