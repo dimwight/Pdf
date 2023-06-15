@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 import facets.core.app.PathSelection;
 import facets.core.app.ViewerTarget;
 import facets.core.superficial.Notifying.Impact;

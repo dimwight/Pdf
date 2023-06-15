@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 import static java.awt.RenderingHints.*;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.Painter;

@@ -1,4 +1,4 @@
-package coords;
+package pdft;
 import static facets.util.Util.*;
 import facets.util.Debug;
 import facets.util.TextLines;

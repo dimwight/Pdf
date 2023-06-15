@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 
 import facets.core.app.AppSurface.ContentStyle;
 import facets.core.app.*;
@@ -116,6 +116,6 @@ public final class pdfInspect extends FacetAppSpecifier{
 		};
 	}
 	public static void main(String[]args){
-		(new pdfInspect()).buildAndLaunchApp(args);
+		new pdfInspect().buildAndLaunchApp(args);
 	}
 }

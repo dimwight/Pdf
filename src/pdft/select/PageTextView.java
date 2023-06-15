@@ -1,6 +1,6 @@
-package coords.inspect;
+package pdft.select;
 
-import static coords.inspect.PdfContenter.*;
+import static pdft.select.PdfContenter.*;
 import facets.core.app.HtmlView;
 import facets.core.superficial.SFrameTarget;
 import facets.core.superficial.STarget;
@@ -12,7 +12,7 @@ import facets.util.Debug;
 import facets.util.Times;
 import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
-import coords.inspect.Texts.TextStyle;
+import pdft.select.Texts.TextStyle;
 
 final class PageTextView extends HtmlView.SmartView{
 	static final int TARGET_COUNT=0,TARGET_WRAP=1;

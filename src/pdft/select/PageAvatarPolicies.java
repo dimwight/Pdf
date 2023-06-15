@@ -1,6 +1,6 @@
-package coords.inspect;
+package pdft.select;
 import static facets.core.app.SViewer.*;
-import static coords.inspect.PdfContenter.*;
+import static pdft.select.PdfContenter.*;
 import facets.core.app.SViewer;
 import facets.core.app.ViewableFrame;
 import facets.core.app.avatar.AvatarContent;

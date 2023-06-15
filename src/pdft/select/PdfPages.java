@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 import static facets.core.app.TextView.*;
 import facets.core.app.SViewer;
 import facets.core.app.ViewableFrame;
@@ -18,7 +18,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import coords.inspect.PageAvatarPolicies.PageRenderView;
+import pdft.select.PageAvatarPolicies.PageRenderView;
 class PdfPages extends ViewableFrame{
 	static final int COS_GO_TO_PAGE=0,COS_PAGE_COUNT=1,COS_FONTS=2,
 		COS_LAST=COS_FONTS;

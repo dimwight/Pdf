@@ -1,8 +1,8 @@
-package coords.inspect;
+package pdft.select;
 import static facets.core.app.ActionViewerTarget.*;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static coords.inspect.PdfPages.*;
+import static pdft.select.PdfPages.*;
 
 import facets.core.app.AppSurface;
 import facets.core.app.AreaRoot;
@@ -34,8 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
 import org.apache.pdfbox.cos.COSDocument;
-import coords.PdfCore;
-import coords.inspect.PageAvatarPolicies.PageRenderView;
+import pdft.PdfCore;
+import pdft.select.PageAvatarPolicies.PageRenderView;
 final class PdfContenter extends ViewerContenter{
 	public static final String ARG_MARK="mark",ARG_RENDER="renderGraphics",
 		ARG_WRAP="wrapCode";

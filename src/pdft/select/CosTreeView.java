@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 import facets.core.app.SViewer;
 import facets.core.superficial.SFrameTarget;
 import facets.core.superficial.SIndexing;

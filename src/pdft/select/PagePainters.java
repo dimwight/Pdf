@@ -1,5 +1,5 @@
-package coords.inspect;
-import static coords.inspect.PageAvatarPolicies.*;
+package pdft.select;
+import static pdft.select.PageAvatarPolicies.*;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.Painter;
 import facets.core.app.avatar.Pickable;
@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.TextPosition;
 import org.apache.pdfbox.util.TextPositionComparator;
-import coords.inspect.DocTexts.PageChars;
+import pdft.select.DocTexts.PageChars;
 final class PagePainters extends Tracer implements Pickable,AvatarContent,SizeEstimable{
 	static final Color hiLite=new Color(153,193,218);
 	@Override

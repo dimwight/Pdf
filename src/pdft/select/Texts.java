@@ -1,4 +1,4 @@
-package coords.inspect;
+package pdft.select;
 import static facets.util.Regex.*;
 import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
