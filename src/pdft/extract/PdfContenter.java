@@ -57,8 +57,7 @@ final class PdfContenter extends ViewerContenter{
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,document,page});
 	}
-	
-	@Override
+		@Override
 	protected void attachContentAreaFacets(AreaRoot area){
 		final FacetFactory ff=app.ff;
 		ViewerAreaMaster vam=newViewerAreaMaster(ff);

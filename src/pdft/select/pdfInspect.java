@@ -16,6 +16,7 @@ import static facets.core.app.ActionAppSurface.CachingStyle.checkItemCount;
 import static facets.core.app.ActionAppSurface.CachingStyle.checkMemory;
 import static facets.core.app.AppConstants.*;
 import static facets.core.app.AppSurface.ContentStyle.DESKTOP;
+import static facets.core.app.AppSurface.ContentStyle.SINGLE;
 import static facets.util.Debug.natureDebug;
 import static facets.util.tree.Nodes.mergeContents;
 public final class pdfInspect extends FacetAppSpecifier{
@@ -61,7 +62,7 @@ public final class pdfInspect extends FacetAppSpecifier{
 	}
 	@Override
 	public ContentStyle contentStyle(){
-		return DESKTOP;
+		return true?SINGLE: DESKTOP;
 	}
 	@Override
 	public boolean canEditContent(){

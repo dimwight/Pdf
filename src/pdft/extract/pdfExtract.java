@@ -17,6 +17,12 @@ public final class pdfExtract extends FacetAppSpecifier{
 	pdfExtract(){
 		super(pdfExtract.class);
 	}
+
+	@Override
+	public boolean isFileApp() {
+		return false;
+	}
+
 	@Override
 	public boolean canCreateContent(){
 		return false;
