@@ -4,7 +4,6 @@ import facets.core.app.avatar.PlaneViewWorks;
 import facets.util.geom.Vector;
 import facets.util.shade.Shades;
 import org.apache.pdfbox.pdmodel.PDPage;
-import pdft.select.PageAvatarPolicies;
 
 import java.awt.*;
 

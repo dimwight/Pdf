@@ -48,7 +48,8 @@ final class PdfContenter extends ViewerContenter{
 	}
 	@Override
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
-		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));, SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document))
+		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
+		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document));
 		PageRenderView render=new PageRenderView(null);
 		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(render);

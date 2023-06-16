@@ -71,8 +71,7 @@ class PdfPages extends ViewableFrame{
 			viewPageAt=pageAt;
 		}
 		return view instanceof AvatarView?
-				((PageAvatarPolicies)((AvatarView)view).avatars()).newViewerSelection(
-						texts.getPainters(pageAt))
+				((PageAvatarPolicies)((AvatarView)view).avatars()).newViewerSelection()
 			:view instanceof PageTextView ?
 					((PageTextView)view).newViewerSelection(texts,pageAt)
 			:view.newViewerSelection(viewer,selection());
