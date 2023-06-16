@@ -35,10 +35,11 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import org.apache.pdfbox.cos.COSDocument;
 import pdft.PdfCore;
-import pdft.select.PageAvatarPolicies.PageRenderView;
+
 final class PdfContenter extends ViewerContenter{
-	public static final String ARG_MARK="mark",ARG_RENDER="renderGraphics",
-		ARG_WRAP="wrapCode";
+	public static final String ARG_MARK="mark";
+	public static final String ARG_RENDER="renderGraphics";
+	public static final String ARG_WRAP="wrapCode";
 	private static final String NAME_DEFAULT="Default";
 	static final String TITLE_REOPEN="Re-open file?";
 	final static FileSpecifier pdfFiles=new FileSpecifier("pdf",
@@ -90,7 +91,7 @@ final class PdfContenter extends ViewerContenter{
 		String title=defaultSource?NAME_DEFAULT+defaults++:
 				((File)source).getName(),
 				toMark=app.spec.nature().getString(ARG_MARK);
-		if(!toMark.equals(""))Texts.markDocPages(cosDoc,toMark);
+		if(!toMark.equals("")) PageTexts.markDocPages(cosDoc,toMark);
 		return new PdfPages(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
@@ -110,8 +111,8 @@ final class PdfContenter extends ViewerContenter{
 			document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 			trailer=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Trailer)),
 			page=pagePolicies.newFramedView(viewable),
-			extracted=new PageTextView(Texts.TextStyle.Extracted,app.spec).newFramed(),
-			stream=new PageTextView(Texts.TextStyle.Stream,app.spec).newFramed();
+			extracted=new PageTextView(PageTexts.TextStyle.Extracted,app.spec).newFramed(),
+			stream=new PageTextView(PageTexts.TextStyle.Stream,app.spec).newFramed();
 		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,document,trailer,page,extracted,stream});
@@ -138,7 +139,7 @@ final class PdfContenter extends ViewerContenter{
 				final boolean forPage=view instanceof PageRenderView,
 					forTree=view instanceof CosTreeView,
 					forStream=view instanceof PageTextView
-						&&((PageTextView)view).style==Texts.TextStyle.Stream;
+						&&((PageTextView)view).style== PageTexts.TextStyle.Stream;
 				return new ViewerAreaMaster(){
 					@Override
 					public Viewer viewerMaster(){

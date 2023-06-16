@@ -7,7 +7,7 @@ import facets.util.Times;
 import facets.util.Util;
 import facets.util.app.ProvidingCache.ItemProvider;
 import org.apache.pdfbox.cos.COSDocument;
-final class Texts extends DocTexts{
+final class PageTexts extends DocTexts{
 	public enum TextStyle{Extracted,Stream;
 		public String title(){
 			return this==Extracted?"E&xtracted":"Stream";
@@ -15,7 +15,7 @@ final class Texts extends DocTexts{
 	}
 	private final PagePainters emptyPainters=new PagePainters(this,0,null);
 	private final FacetAppSurface app;
-	Texts(COSDocument cosDoc,FacetAppSurface app){
+	PageTexts(COSDocument cosDoc, FacetAppSurface app){
 		super(cosDoc);
 		this.app=app;
 	}
@@ -27,7 +27,7 @@ final class Texts extends DocTexts{
 			@Override
 			protected PagePainters newItem(){
 				traceDebug(".getPainters:=",this);
-				return new PagePainters(Texts.this,pageAt,app);
+				return new PagePainters(PageTexts.this,pageAt,app);
 			}
 			@Override
 			protected long buildByteCount(){
@@ -49,7 +49,7 @@ final class Texts extends DocTexts{
 		if(false)Times.printElapsed("Texts..buildPageContent extracted="+extracted);
 		final int basePts=FacetFactory.fontSizes[FacetFactory.fontSizeAt];
 		String html=new ItemProvider<String>(app.ff.providingCache(),doc,
-				Texts.class.getSimpleName()+".newHtml"){
+				PageTexts.class.getSimpleName()+".newHtml"){
 			@Override
 			protected String newItem(){
 				return new HtmlBuilder(){
