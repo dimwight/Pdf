@@ -55,21 +55,16 @@ final class PdfContenter extends ViewerContenter{
 		SFrameTarget page = new SFrameTarget(render);
 		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
-				new SFrameTarget[]{pages,document,page});
+				new SFrameTarget[]{pages,
+						document,
+//						page
+		});
 	}
-		@Override
+	@Override
 	protected void attachContentAreaFacets(AreaRoot area){
-		final FacetFactory ff=app.ff;
-		ViewerAreaMaster vam=newViewerAreaMaster(ff);
-		AreaFacets areas=ff.areas();
-		areas.attachPanes(area,areas.viewerAreaChildren(area,vam),
-			new int[][]{{PANE_SPLIT_VERTICAL},
-				{PANE_SPLIT_HORIZONTAL,PANE_LOWER,PANE_SPLIT_HORIZONTAL},
-			{PANE_SPLIT_VERTICAL,PANE_LEFT,PANE_SPLIT_HORIZONTAL},
-		},
-			new double[]{0.33,0.5,0.5,0.33,0.5},
-			new int[]{1,0,0,1,1,0,1,1},
-			new String[]{"Structure","P&age"});
+		app.ff.areas().attachViewerAreaPanes(area,
+				false?"":newViewerAreaMaster(app.ff),
+				AreaFacets.PANE_SPLIT_VERTICAL);
 	}
 	private static ViewerAreaMaster newViewerAreaMaster(final FacetFactory ff){
 		return new ViewerAreaMaster(){
@@ -109,6 +104,7 @@ final class PdfContenter extends ViewerContenter{
 	}
 	@Override
 	public void areaRetargeted(SContentAreaTargeter root){
+		if(true)return;;
 		Object activeView=((SFrameTarget)root.view().target()).framed;
 		STargeter[]pane=root.elements(),paneShow=pane[PANE_SHOW].elements(),
 			content=root.content().elements();
