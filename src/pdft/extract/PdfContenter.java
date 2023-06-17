@@ -14,12 +14,13 @@ import facets.util.Debug;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import pdft.select.*;
 
 import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.extract.PdfPages.*;
+import static pdft.extract.PageTexts.*;
+import static pdft.extract.PdfPages.COS_FONTS;
+import static pdft.extract.PdfPages.COS_LAST;
 
 final class PdfContenter extends ViewerContenter{
 	public static final String ARG_WRAP="wrapCode";
@@ -36,7 +37,7 @@ final class PdfContenter extends ViewerContenter{
 		COSDocument cosDoc=(COSDocument)source;
 		if(cosDoc==null)throw new AppSurface.ContentCreationException(
 				"Content creation was interrupted for "+source+".");
-		String title="NAME_DEFAULT"+defaults++;
+		String title="Coords"+defaults++;
 		return new PdfPages(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
@@ -49,7 +50,9 @@ final class PdfContenter extends ViewerContenter{
 	@Override
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
-		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document));
+		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
+				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
+				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
 		PageRenderView render=new PageRenderView(null);
 		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(render);
@@ -57,6 +60,8 @@ final class PdfContenter extends ViewerContenter{
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,
 						document,
+						extracted,
+						stream,
 //						page
 		});
 	}
@@ -73,7 +78,7 @@ final class PdfContenter extends ViewerContenter{
 				final boolean forPage=view instanceof PageRenderView,
 					forTree=view instanceof CosTreeView,
 					forStream=view instanceof PageTextView
-						&&((PageTextView)view).style== PageTexts.TextStyle.Stream;
+						&&((PageTextView)view).style== TextStyle.Stream;
 				return new ViewerAreaMaster(){
 					@Override
 					public Viewer viewerMaster(){
