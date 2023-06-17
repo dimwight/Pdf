@@ -61,7 +61,9 @@ final class PdfContenter extends ViewerContenter{
 						document,
 						extracted,
 						stream,
-//						page
+						/*
+						page,
+						*/
 		});
 	}
 	@Override
