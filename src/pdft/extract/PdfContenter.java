@@ -6,7 +6,6 @@ import facets.core.superficial.*;
 import facets.core.superficial.app.FacetedTarget;
 import facets.core.superficial.app.SSelection;
 import facets.facet.AreaFacets;
-import facets.facet.FacetFactory;
 import facets.facet.FacetMaster.Viewer;
 import facets.facet.ViewerAreaMaster;
 import facets.facet.app.FacetAppSurface;
@@ -67,42 +66,41 @@ final class PdfContenter extends ViewerContenter{
 	}
 	@Override
 	protected void attachContentAreaFacets(AreaRoot area){
-		app.ff.areas().attachViewerAreaPanes(area,
-				false?"":newViewerAreaMaster(app.ff),
-				AreaFacets.PANE_SPLIT_VERTICAL);
-	}
-	private static ViewerAreaMaster newViewerAreaMaster(final FacetFactory ff){
-		return new ViewerAreaMaster(){
-			protected ViewerAreaMaster newChildMaster(SAreaTarget area){
-				final SView view=((ViewerTarget)area.activeFaceted()).view();
-				final boolean forPage=view instanceof PageRenderView,
-					forTree=view instanceof CosTreeView,
-					forStream=view instanceof PageTextView
-						&&((PageTextView)view).style== TextStyle.Stream;
-				return new ViewerAreaMaster(){
+		ViewerAreaMaster master = new ViewerAreaMaster() {
+			protected ViewerAreaMaster newChildMaster(SAreaTarget area1) {
+				final SView view = ((ViewerTarget) area1.activeFaceted()).view();
+				final boolean forPage = view instanceof PageRenderView,
+						forTree = view instanceof CosTreeView,
+						forStream = view instanceof PageTextView
+								&& ((PageTextView) view).style == TextStyle.Stream;
+				return new ViewerAreaMaster() {
 					@Override
-					public Viewer viewerMaster(){
-						return forTree?new CosTreeMaster():null; 
+					public Viewer viewerMaster() {
+						return forTree ? new CosTreeMaster() : null;
 					}
+
 					@Override
-					protected String hintString(){
-						return forPage?HINT_BARE:forStream?HINT_PANEL_ABOVE:HINT_NONE;
+					protected String hintString() {
+						return forPage ? HINT_BARE : forStream ? HINT_PANEL_ABOVE : HINT_NONE;
 					}
+
 					@Override
-					protected SFacet newViewTools(STargeter targeter){
-						if(!forStream)return null;
-						STargeter[]elements=targeter.elements();
-						return ff.toolGroups(targeter,HINT_NONE,
-					  		ff.textualField(elements[PageTextView.TARGET_COUNT],5,HINT_USAGE_FORM),
-					  		ff.togglingCheckboxes(elements[PageTextView.TARGET_WRAP],HINT_BARE),
-					  		true?null:ff.togglingButtons(elements[PageTextView.TARGET_WRAP],HINT_BARE),
-					  		ff.spacerTall(30)
-							);
+					protected SFacet newViewTools(STargeter targeter) {
+						if (!forStream) return null;
+						STargeter[] elements = targeter.elements();
+						return app.ff.toolGroups(targeter, HINT_NONE,
+								app.ff.textualField(elements[PageTextView.TARGET_COUNT], 5, HINT_USAGE_FORM),
+								app.ff.togglingCheckboxes(elements[PageTextView.TARGET_WRAP], HINT_BARE),
+								true ? null : app.ff.togglingButtons(elements[PageTextView.TARGET_WRAP], HINT_BARE),
+								app.ff.spacerTall(30)
+						);
 					}
 				};
 			}
 		};
+		app.ff.areas().attachViewerAreaPanes(area, master, AreaFacets.PANE_SPLIT_VERTICAL);
 	}
+
 	@Override
 	public STarget[]lazyContentAreaElements(SAreaTarget area){
 		return app.ff.areas().panesGetTarget(area).elements();
