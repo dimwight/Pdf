@@ -52,7 +52,7 @@ final class PdfContenter extends ViewerContenter{
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
 				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
-		PageRenderView render=new PageRenderView(null);
+		PageRenderView render=new PageRenderView(new PageAvatarPolicies());
 		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(render);
 		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
