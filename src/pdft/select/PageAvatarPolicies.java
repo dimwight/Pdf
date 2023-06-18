@@ -63,7 +63,6 @@ final class PageAvatarPolicies extends AvatarPolicies{
 			}
 		};
 	}
-	@Override
 	public AvatarPolicy avatarPolicy(SViewer viewer,AvatarContent content,
 			final PainterSource p){
 		return new AvatarPolicy(){
