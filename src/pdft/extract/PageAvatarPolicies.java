@@ -1,7 +1,5 @@
 package pdft.extract;
 
-import applicable.textart.TextArt;
-import facets.core.app.SView;
 import facets.core.app.SViewer;
 import facets.core.app.avatar.*;
 import facets.util.shade.Shade;
@@ -25,27 +23,28 @@ final class PageAvatarPolicies extends AvatarPolicies{
         return new AvatarPolicy() {
             @Override
             public Painter[] newViewPainters(boolean selected, boolean active) {
-                boolean picked = true;
                 return new Painter[]{
-                        coordBar(selected, picked)
+                        coordBar(selected, false, true),
+                        coordBar(selected, false, false)
                 };
             }
-            private Painter coordBar(boolean selected, boolean picked) {
+            @Override
+            public Painter[] newPickPainters(Object hit, boolean selected) {
+                return new Painter[]{
+                        coordBar(selected, true, true)
+                };
+            }
+            private Painter coordBar(boolean selected, boolean picked, boolean forX) {
                 Shade shade = selected ?red.brighter(): picked ?red.darker(): red;
-                boolean forX = true;
                 boolean pickable = !picked;
                 int thickness  = 10;
                 Painter bar = p.bar(0,
                         0,
-                        forX ? thickness : across,
+                        !forX ? thickness : across,
                         forX ? thickness : down,
                         shade,
                         pickable);
                 return bar;
-            }
-            @Override
-            public Painter[] newPickPainters(Object hit, boolean selected) {
-                return null;
             }
         };
     }
