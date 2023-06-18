@@ -4,6 +4,7 @@ import facets.core.app.SViewer;
 import facets.core.app.avatar.*;
 import facets.util.shade.Shade;
 import facets.util.shade.Shades;
+import pdft.extract.PageRenderView.Coord;
 
 import static facets.util.shade.Shades.red;
 
@@ -20,28 +21,29 @@ final class PageAvatarPolicies extends AvatarPolicies{
         PageRenderView view = (PageRenderView) viewer.view();
         double across = view.showWidth() - MARGINS;
         double down = view.showHeight() - MARGINS;
+        Coord coord= (Coord) content;
         return new AvatarPolicy() {
             @Override
             public Painter[] newViewPainters(boolean selected, boolean active) {
                 return new Painter[]{
-                        coordBar(selected, false, true),
-                        coordBar(selected, false, false)
+                        coordBar(coord, selected, false),
                 };
             }
             @Override
             public Painter[] newPickPainters(Object hit, boolean selected) {
                 return new Painter[]{
-                        coordBar(selected, true, true)
+                        coordBar(coord, selected, true)
                 };
             }
-            private Painter coordBar(boolean selected, boolean picked, boolean forX) {
-                Shade shade = selected ?red.brighter(): picked ?red.darker(): red;
+            private Painter coordBar(Coord coord, boolean selected, boolean picked) {
+                Shade shade = selected ?red: picked ?red.darker().darker(): red.darker();
                 boolean pickable = !picked;
                 int thickness  = 10;
-                Painter bar = p.bar(0,
-                        0,
-                        !forX ? thickness : across,
-                        forX ? thickness : down,
+                boolean vertical = coord.forX;
+                Painter bar = p.bar(vertical ? coord.at : 0,
+                        vertical ?0:coord.at,
+                        vertical ? thickness : across,
+                        vertical ? down : thickness,
                         shade,
                         pickable);
                 return bar;

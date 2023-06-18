@@ -13,6 +13,14 @@ import java.awt.*;
 import static facets.facet.kit.avatar.SwingPainterSource.newDummy;
 
 final class PageRenderView extends PlaneViewWorks {
+    private Coord selected;
+    private AvatarContent[] contents = new AvatarContent[]{
+        new Coord(true, 0f),
+                selected =
+                        new Coord(false, 0f),
+                new Coord(true, 200f),
+                new Coord(false, 100f),
+    };
     PageRenderView(PageAvatarPolicies avatars) {
         super("Re&ndering", 0, 0, new Vector(0, 0), avatars);
     }
@@ -33,32 +41,30 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                return new AvatarContent[] {
-                        newDummy()
-                };
+                  return contents;
             }
 
             @Override
             public Object single() {
-                return null;
+                return selected;
             }
 
             @Override
             public Object[] multiple() {
-                return new Object[0];
+                return new Object[]{selected};
             }
         };
     }
-    public static TextArt newDummy() {
-        return new TextArt("Hi",
-                20,
-                20,
-                0,
-                Shades.red,
-                "",
-                200,
-                false,
-                false,
-                "");
+
+    static class Coord implements AvatarContent {
+        final boolean forX;
+        private static int ids;
+        private final int id;
+        float at;
+        Coord(boolean forX, float at) {
+            this.forX = forX;
+            this.at = at;
+            id = ids++;
+        }
     }
 }
