@@ -2,7 +2,7 @@ package pdft.select;
 import static facets.core.app.ActionViewerTarget.*;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.select.PdfPages.*;
+import static pdft.select.PdfViewable.*;
 
 import facets.core.app.AppSurface;
 import facets.core.app.AreaRoot;
@@ -92,7 +92,7 @@ final class PdfContenter extends ViewerContenter{
 				((File)source).getName(),
 				toMark=app.spec.nature().getString(ARG_MARK);
 		if(!toMark.equals("")) PageTexts.markDocPages(cosDoc,toMark);
-		return new PdfPages(title,cosDoc,app){
+		return new PdfViewable(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				SSelection selection=super.defineSelection(definition);
@@ -113,7 +113,7 @@ final class PdfContenter extends ViewerContenter{
 			page=pagePolicies.newFramedView(viewable),
 			extracted=new PageTextView(PageTexts.TextStyle.Extracted,app.spec).newFramed(),
 			stream=new PageTextView(PageTexts.TextStyle.Stream,app.spec).newFramed();
-		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
+		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,document,trailer,page,extracted,stream});
 	}

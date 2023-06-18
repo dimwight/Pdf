@@ -14,7 +14,7 @@ import facets.util.NumberPolicy;
 import static facets.core.app.AppSurface.ContentStyle.SINGLE;
 import static facets.core.app.TextView.PAGE_NEXT;
 import static facets.core.app.TextView.PAGE_PREVIOUS;
-import static pdft.select.PdfPages.*;
+import static pdft.select.PdfViewable.*;
 final class PdfFeatures extends FacetFactory{
 	private final FacetAppSurface app;
 	private final SContentAreaTargeter area;

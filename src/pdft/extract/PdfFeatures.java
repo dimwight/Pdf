@@ -10,7 +10,7 @@ import facets.facet.AreaFacets.PaneMenuStyle;
 import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
 
-import static pdft.extract.PdfPages.*;
+import static pdft.extract.PdfViewable.*;
 
 final class PdfFeatures extends FacetFactory{
 	private final FacetAppSurface app;

@@ -18,8 +18,8 @@ import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
 import static pdft.extract.PageTexts.*;
-import static pdft.extract.PdfPages.COS_FONTS;
-import static pdft.extract.PdfPages.COS_LAST;
+import static pdft.extract.PdfViewable.COS_FONTS;
+import static pdft.extract.PdfViewable.COS_LAST;
 
 final class PdfContenter extends ViewerContenter{
 	public static final String ARG_WRAP="wrapCode";
@@ -37,7 +37,7 @@ final class PdfContenter extends ViewerContenter{
 		if(cosDoc==null)throw new AppSurface.ContentCreationException(
 				"Content creation was interrupted for "+source+".");
 		String title="Coords"+defaults++;
-		return new PdfPages(title,cosDoc,app){
+		return new PdfViewable(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				SSelection selection=super.defineSelection(definition);
@@ -55,15 +55,15 @@ final class PdfContenter extends ViewerContenter{
 		PageRenderView render=new PageRenderView(null);
 		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(render);
-		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
+		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,
+						/*
 						document,
 						extracted,
 						stream,
-						/*
-						page,
 						*/
+						page,
 		});
 	}
 	@Override

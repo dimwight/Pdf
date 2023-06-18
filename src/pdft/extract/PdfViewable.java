@@ -1,5 +1,5 @@
-package pdft.select;
-import static facets.core.app.TextView.*;
+package pdft.extract;
+
 import facets.core.app.SViewer;
 import facets.core.app.ViewableFrame;
 import facets.core.app.avatar.AvatarView;
@@ -12,23 +12,29 @@ import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
 import facets.util.NumberPolicy;
 import facets.util.app.ProvidingCache;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
-class PdfPages extends ViewableFrame{
-	static final int COS_GO_TO_PAGE=0,COS_PAGE_COUNT=1,COS_FONTS=2,
-		COS_LAST=COS_FONTS;
+import java.util.ArrayList;
+import java.util.List;
+
+import static facets.core.app.TextView.PAGE_NEXT;
+import static facets.core.app.TextView.PAGE_PREVIOUS;
+
+class PdfViewable extends ViewableFrame{
+	static final int COS_GO_TO_PAGE=0;
+	static final int COS_PAGE_COUNT=1;
+	static final int COS_FONTS=2;
+	static final int COS_LAST=COS_FONTS;
 	private final ProvidingCache appCache;
 	private final PageTexts texts;
 	private final List<COSDictionary>cosPages;
 	private final int pageCount;
 	private final SNumeric goToPage;
 	private int viewPageAt;
-	PdfPages(String title,COSDocument cosDoc,FacetAppSurface app){
+	PdfViewable(String title, COSDocument cosDoc, FacetAppSurface app){
 		super(title,cosDoc);
 		appCache=app.ff.providingCache();
 		texts=new PageTexts(cosDoc,app);
@@ -65,10 +71,9 @@ class PdfPages extends ViewableFrame{
 			viewPageAt=pageAt;
 		}
 		return view instanceof AvatarView?
-				((PageAvatarPolicies)((AvatarView)view).avatars()).newViewerSelection(
-						texts.getPainters(pageAt))
-			:view instanceof PageTextView?
-					((PageTextView)view).newViewerSelection(texts,pageAt)
+				((PageAvatarPolicies)((AvatarView)view).avatars()).newViewerSelection()
+			:view instanceof PageTextView ?
+				((PageTextView)view).newViewerSelection(texts,pageAt)
 			:view.newViewerSelection(viewer,selection());
 	}
 	@Override
@@ -108,19 +113,4 @@ class PdfPages extends ViewableFrame{
 	void setPageViewToRotation(PageRenderView view){
 		view.setToPageRotation(new PDPage((COSDictionary)selection().single()));
 	}
-}/*
-This file forms part of Version 0.3.62 of pdfInspect 
-http://pdfinspector.sourceforge.net
-Copyright (C) 2011  David M Wright 
-This library is free software; you can redistribute it and/or modify it under 
-the terms of the GNU Lesser General Public License as published by the 
-Free Software Foundation; either release 3 of the License, or (at your 
-option) any later release.
-This library is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
-A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more 
-details.
-You should have received a copy of the GNU Lesser General Public License along 
-with this library; if not, write to the Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*/
+}
