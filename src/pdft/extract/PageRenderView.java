@@ -1,6 +1,7 @@
 package pdft.extract;
 
 import facets.core.app.avatar.PlaneViewWorks;
+import facets.core.superficial.app.SSelection;
 import facets.util.geom.Vector;
 import facets.util.shade.Shades;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -22,5 +23,24 @@ final class PageRenderView extends PlaneViewWorks {
         double across = rotated ? size.height : size.width, down = rotated ? size.width
                 : size.height;
         setShowValues(across + PageAvatarPolicies.MARGINS, down + PageAvatarPolicies.MARGINS, new Vector(PageAvatarPolicies.MARGINS, PageAvatarPolicies.MARGINS).scaled(0.5), 1);
+    }
+
+    public SSelection newViewerSelection() {
+        return new SSelection() {
+            @Override
+            public Object content() {
+                return null;
+            }
+
+            @Override
+            public Object single() {
+                return null;
+            }
+
+            @Override
+            public Object[] multiple() {
+                return new Object[0];
+            }
+        };
     }
 }
