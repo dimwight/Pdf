@@ -1,5 +1,6 @@
 package pdft.extract;
 
+import applicable.textart.TextArt;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneViewWorks;
 import facets.core.superficial.app.SSelection;
@@ -8,6 +9,8 @@ import facets.util.shade.Shades;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.awt.*;
+
+import static facets.facet.kit.avatar.SwingPainterSource.newDummy;
 
 final class PageRenderView extends PlaneViewWorks {
     PageRenderView(PageAvatarPolicies avatars) {
@@ -30,7 +33,9 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                return new AvatarContent[] {};
+                return new AvatarContent[] {
+                        newDummy()
+                };
             }
 
             @Override
@@ -43,5 +48,17 @@ final class PageRenderView extends PlaneViewWorks {
                 return new Object[0];
             }
         };
+    }
+    public static TextArt newDummy() {
+        return new TextArt("Hi",
+                0,
+                0,
+                0,
+                Shades.red,
+                "",
+                2,
+                false,
+                false,
+                "");
     }
 }
