@@ -9,6 +9,16 @@ import pdft.extract.PageRenderView.Coord;
 import static facets.util.shade.Shades.red;
 
 final class PageAvatarPolicies extends AvatarPolicies{
+    enum ShadeStates{
+        Selected (red),
+        Plain (red.darker()),
+        Picked (red.darker().darker()),
+        ;
+        final Shade shade;
+        ShadeStates(Shade shade) {
+            this.shade = shade;
+        }
+    }
     public static final int MARGINS = -1;
     @Override
     public Painter getBackgroundPainter(SViewer viewer, PainterSource p) {
@@ -36,9 +46,10 @@ final class PageAvatarPolicies extends AvatarPolicies{
                 };
             }
             private Painter coordBar(Coord coord, boolean selected, boolean picked) {
-                Shade shade = selected ?red: picked ?red.darker().darker(): red.darker();
+                Shade shade = false?ShadeStates.values()[coord.id].shade:
+                        picked?red.darker().darker():selected?red:red.darker();
                 boolean pickable = !picked;
-                int thickness  = 10;
+                int thickness =true?19+coord.id: 10;
                 boolean vertical = coord.forX;
                 Painter bar = p.bar(vertical ? coord.at : 0,
                         vertical ?0:coord.at,
