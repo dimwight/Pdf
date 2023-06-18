@@ -51,12 +51,12 @@ final class PageRenderView extends PlaneViewWorks {
     }
     public static TextArt newDummy() {
         return new TextArt("Hi",
-                0,
-                0,
+                20,
+                20,
                 0,
                 Shades.red,
                 "",
-                2,
+                200,
                 false,
                 false,
                 "");
