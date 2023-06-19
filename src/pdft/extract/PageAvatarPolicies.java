@@ -7,15 +7,15 @@ import facets.util.shade.Shades;
 import pdft.extract.PageRenderView.Coord;
 
 import static facets.util.shade.Shades.red;
+import static pdft.extract.PageAvatarPolicies.ShadeState.*;
 
 final class PageAvatarPolicies extends AvatarPolicies{
-    enum ShadeStates{
-        Selected (red),
+    enum ShadeState {
         Plain (red.darker()),
-        Picked (red.darker().darker()),
-        ;
+        Selected (red),
+        Picked (red.darker().darker());
         final Shade shade;
-        ShadeStates(Shade shade) {
+        ShadeState(Shade shade) {
             this.shade = shade;
         }
     }
@@ -47,17 +47,17 @@ final class PageAvatarPolicies extends AvatarPolicies{
                 };
             }
             private Painter coordBar(Coord coord, boolean selected, boolean picked) {
-                Shade shade = false?ShadeStates.values()[coord.id].shade:
-                        picked?red.darker().darker():selected?red:red.darker();
+                ShadeState state = false? ShadeState.values()[coord.id]:
+                        picked?Picked:selected?Selected:Plain;
+                trace(" picked=" + picked+" coord=" + coord.id+" state=" + state);
                 boolean pickable = !picked;
                 int thickness =true?19+coord.id: 10;
                 boolean vertical = coord.forX;
-                trace(" picked=" + picked+" coord=" + coord.id+" shade=" + shade);
                 Painter bar = p.bar(vertical ? coord.at : 0,
                         vertical ?0:coord.at,
                         vertical ? thickness : across,
                         vertical ? down : thickness,
-                        shade,
+                        state.shade,
                         pickable);
                 return bar;
             }
