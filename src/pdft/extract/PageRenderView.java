@@ -10,14 +10,14 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import java.awt.*;
 
 final class PageRenderView extends PlaneViewWorks {
-    private AvatarContent[] content = true ?
+    private AvatarContent[] content = false ?
             new AvatarContent[]{
-                    new Coord(true, 0f),
+                    new Coord(true, 10f),
                     new Coord(true, 200f),
                     new Coord(true, 400f),
             } : new AvatarContent[]{
-            new Coord(true, 0f),
-            new Coord(false, 0f),
+            new Coord(true, 10f),
+            new Coord(false, 10f),
             new Coord(true, 200f),
             new Coord(false, 100f),
     };
@@ -52,7 +52,7 @@ final class PageRenderView extends PlaneViewWorks {
             @Override
             public Object[] multiple() {
                 return new Object[]{
-                       content[0],
+//                       content[0],
 //                       content[1],
                        content[2],
 //                       content[3],
