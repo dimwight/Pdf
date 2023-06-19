@@ -1,6 +1,5 @@
 package pdft.extract;
 
-import applicable.textart.TextArt;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneViewWorks;
 import facets.core.superficial.app.SSelection;
@@ -10,20 +9,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.awt.*;
 
-import static facets.facet.kit.avatar.SwingPainterSource.newDummy;
-
 final class PageRenderView extends PlaneViewWorks {
-    private Coord selected;
-    private AvatarContent[] contents = true?
+    private AvatarContent[] content = true ?
             new AvatarContent[]{
-        new Coord(true, 0f),
-                    selected =
-                            new Coord(true, 200f),
-                new Coord(true, 400f),
-    }:new AvatarContent[]{
+                    new Coord(true, 0f),
+                    new Coord(true, 200f),
+                    new Coord(true, 400f),
+            } : new AvatarContent[]{
             new Coord(true, 0f),
-            selected =
-                    new Coord(false, 0f),
+            new Coord(false, 0f),
             new Coord(true, 200f),
             new Coord(false, 100f),
     };
@@ -47,18 +41,22 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                  return contents;
+                  return content;
             }
 
             @Override
             public Object single() {
-                return selected;
+                return multiple()[0];
             }
 
             @Override
             public Object[] multiple() {
-                return true?contents:
-                        new Object[]{selected};
+                return new Object[]{
+                       content[0],
+//                       content[1],
+                       content[2],
+//                       content[3],
+                };
             }
         };
     }
