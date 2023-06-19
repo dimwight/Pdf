@@ -41,6 +41,7 @@ final class PageAvatarPolicies extends AvatarPolicies{
             }
             @Override
             public Painter[] newPickPainters(Object hit, boolean selected) {
+                trace(" hit = " + hit);
                 return new Painter[]{
                         coordBar(coord, selected, true)
                 };
@@ -51,6 +52,7 @@ final class PageAvatarPolicies extends AvatarPolicies{
                 boolean pickable = !picked;
                 int thickness =true?19+coord.id: 10;
                 boolean vertical = coord.forX;
+                trace(" picked=" + picked+" coord=" + coord.id+" shade=" + shade);
                 Painter bar = p.bar(vertical ? coord.at : 0,
                         vertical ?0:coord.at,
                         vertical ? thickness : across,
