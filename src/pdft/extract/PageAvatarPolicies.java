@@ -2,10 +2,9 @@ package pdft.extract;
 
 import facets.core.app.SViewer;
 import facets.core.app.avatar.*;
-import facets.util.geom.Line;
+import facets.util.geom.Point;
 import facets.util.shade.Shade;
 import facets.util.shade.Shades;
-import pdft.extract.PageRenderView.Coord;
 
 import static facets.util.shade.Shades.*;
 import static pdft.extract.PageAvatarPolicies.ShadeState.*;
@@ -15,56 +14,68 @@ final class PageAvatarPolicies extends AvatarPolicies{
     enum ShadeState {
         Plain (TEST ?red:red),
         Selected (TEST ?yellow:magenta.darker()),
-        Picked (TEST ?blue:red.darker());
+        Picked (TEST ?blue:red.darker()),
+        Dragging (TEST ?blue:blue.darker());
         final Shade shade;
         ShadeState(Shade shade) {
             this.shade = shade;
         }
+        static ShadeState chooseViewState(boolean selected, boolean picked) {
+            return picked ? Picked : selected ? Selected : Plain;
+        }
     }
-    public static final int MARGINS = -1;
     @Override
     public Painter getBackgroundPainter(SViewer viewer, PainterSource p) {
-        PageRenderView view = (PageRenderView) viewer.view();
-        return p.bar(0,0,view.showWidth()-MARGINS,view.showHeight()-MARGINS,
+        PlaneView view = (PlaneView) viewer.view();
+        return p.bar(0,0,view.showWidth(),view.showHeight(),
                 Shades.white,false);
     }
     @Override
     public AvatarPolicy viewerPolicy(SViewer viewer, AvatarContent content, PainterSource p) {
-        PageRenderView view = (PageRenderView) viewer.view();
-        double w = view.showWidth() - MARGINS;
-        double h = view.showHeight() - MARGINS;
+        PlaneView view = (PlaneView) viewer.view();
+        double w = view.showWidth() ;
+        double h = view.showHeight() ;
         Coord coord= (Coord) content;
         return new AvatarPolicy() {
             @Override
             public Painter[] newViewPainters(boolean selected, boolean active) {
                 return new Painter[]{
-                        coordLine(coord, selected, false),
+                        coordLine(coord, view, selected, false, p),
                 };
             }
             @Override
             public Painter[] newPickPainters(Object hit, boolean selected) {
-                if (false) trace(" hit = " + hit);
                 return new Painter[]{
-                        coordLine(coord, selected, true)
+                        coordLine(coord, view, selected, true, p)
                 };
             }
-            private Painter coordLine(Coord coord, boolean selected, boolean picked) {
-                ShadeState state = false? ShadeState.values()[coord.id]:
-                        picked?Picked:selected?Selected:Plain;
-                if (false) trace(" picked=" + picked+" coord=" + coord.id+" state=" + state);
-                boolean pickable = !picked;
-                int thickness = 10;
-                boolean forX = coord.forX;
-                float at = coord.at;
-                Painter bar = false?
-                        p.bar(forX ? at : 0, forX ? 0 : at, forX ? thickness : w, forX ? h : thickness, state.shade, pickable):
-                        p.line(new Line(new double[]{
-                                forX ? at : 0,
-                                forX ? 0 : at,
-                                forX ? at : w,
-                                forX ? h : at,
-                        }),state.shade,0,pickable);
-                return bar;
+        };
+    }
+    static Painter coordLine(Coord c, PlaneView view, boolean selected, boolean picked, PainterSource p) {
+        ShadeState state = chooseViewState(selected, picked);
+        return p.line(c.newViewLine(view),state.shade,0, !picked);
+    }
+    @Override
+    public DragPolicy dragPolicy(AvatarView view, AvatarContent[] content, Object hit, PainterSource p) {
+        PlaneView page = (PlaneView) view;
+        Coord then= (Coord) content[0];
+        return new DragPolicy() {
+            @Override
+            public Painter[] newDragPainters(Point anchorAt, Point dragAt) {
+                Coord now;
+                now = newUpdate(anchorAt, dragAt);
+                return new Painter[]{
+                        p.line(now.newViewLine(page), Dragging.shade, 0, false)
+                };
+            }
+            @Override
+            public Object[] newDragDropEdits(Point anchorAt, Point dragAt) {
+                return new Object[]{newUpdate(anchorAt, dragAt)};
+            }
+            private Coord newUpdate(Point anchorAt, Point dragAt) {
+                boolean forX = then.forX;
+                return new Coord(forX, then.at +
+                        (forX ? dragAt.x() - anchorAt.x() : dragAt.y() - anchorAt.y()));
             }
         };
     }

@@ -10,17 +10,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import java.awt.*;
 
 final class PageRenderView extends PlaneViewWorks {
-    private AvatarContent[] content = false ?
-            new AvatarContent[]{
-                    new Coord(true, 10f),
-                    new Coord(true, 200f),
-                    new Coord(true, 400f),
-            } : new AvatarContent[]{
-            new Coord(true, 10f),
-            new Coord(false, 10f),
-            new Coord(true, 200f),
-            new Coord(false, 100f),
-    };
     PageRenderView(PageAvatarPolicies avatars) {
         super("Re&ndering", 0, 0, new Vector(0, 0), avatars);
     }
@@ -34,7 +23,7 @@ final class PageRenderView extends PlaneViewWorks {
         Dimension size = page.findMediaBox().createDimension();
         double across = rotated ? size.height : size.width, down = rotated ? size.width
                 : size.height;
-        setShowValues(across + PageAvatarPolicies.MARGINS, down + PageAvatarPolicies.MARGINS, new Vector(PageAvatarPolicies.MARGINS, PageAvatarPolicies.MARGINS).scaled(0.5), 1);
+        setShowValues(across, down, new Vector(0,0), 1);
     }
 
     public SSelection newViewerSelection() {
@@ -52,24 +41,25 @@ final class PageRenderView extends PlaneViewWorks {
             @Override
             public Object[] multiple() {
                 return new Object[]{
-//                       content[0],
-//                       content[1],
+                       content[1],
+                        /*
+                       content[0],
                        content[2],
-//                       content[3],
-                };
+                       content[3],
+              */  };
             }
         };
     }
 
-    static class Coord implements AvatarContent {
-        final boolean forX;
-        private static int ids;
-        final int id;
-        float at;
-        Coord(boolean forX, float at) {
-            this.forX = forX;
-            this.at = at;
-            id = ids++;
-        }
-    }
+    private AvatarContent[] content = false ?
+            new AvatarContent[]{
+                    new Coord(true, 10f),
+                    new Coord(true, 200f),
+                    new Coord(true, 400f),
+            } : new AvatarContent[]{
+            new Coord(true, 10f),
+            new Coord(false, 10f),
+            new Coord(true, 200f),
+            new Coord(false, 100f),
+    };
 }
