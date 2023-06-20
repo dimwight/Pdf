@@ -6,19 +6,28 @@ import facets.core.superficial.app.SSelection;
 import facets.util.geom.Vector;
 import facets.util.shade.Shades;
 import org.apache.pdfbox.pdmodel.PDPage;
+import pdft.extract.Coord.Coords;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 final class PageRenderView extends PlaneViewWorks {
-    PageRenderView(PageAvatarPolicies avatars) {
+    public static final boolean TEST = true;
+    private final Map<PDPage, Coords> pageCoords;
+    PageRenderView(Map<PDPage, Coords> pageCoords, PageAvatarPolicies avatars) {
         super("Re&ndering", 0, 0, new Vector(0, 0), avatars);
+        this.pageCoords = pageCoords;
     }
     @Override
     public Object backgroundStyle() {
         return Shades.gray;
     }
 
+    Coords coords;
     void setToPageRotation(PDPage page) {
+        coords = pageCoords.get(page);
+        if(coords==null)coords=pageCoords.put(page, new Coords());
         boolean rotated = page.findRotation() != 0;
         Dimension size = page.findMediaBox().createDimension();
         double across = rotated ? size.height : size.width, down = rotated ? size.width
@@ -30,7 +39,7 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                  return content;
+                  return TEST ?content_:coords.getAll();
             }
 
             @Override
@@ -41,7 +50,7 @@ final class PageRenderView extends PlaneViewWorks {
             @Override
             public Object[] multiple() {
                 return new Object[]{
-                       content[1],
+                       TEST ? content_[1]:((List)content()).get(0)
                         /*
                        content[0],
                        content[2],
@@ -51,7 +60,7 @@ final class PageRenderView extends PlaneViewWorks {
         };
     }
 
-    private AvatarContent[] content = false ?
+    private AvatarContent[] content_ = false ?
             new AvatarContent[]{
                     new Coord(true, 10f),
                     new Coord(true, 200f),

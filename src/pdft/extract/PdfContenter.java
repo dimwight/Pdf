@@ -13,6 +13,10 @@ import facets.util.Debug;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import pdft.extract.Coord.Coords;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
@@ -46,13 +50,15 @@ final class PdfContenter extends ViewerContenter{
 			}
 		};
 	}
+	private final Map<PDPage,Coords>pageCoords=new HashMap();
+	Coords coords=new Coords();
 	@Override
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
 				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
-		PageRenderView render=new PageRenderView(new PageAvatarPolicies());
+		PageRenderView render=new PageRenderView(pageCoords, new PageAvatarPolicies());
 		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(render);
 		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
