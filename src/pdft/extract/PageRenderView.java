@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import pdft.extract.Coord.Coords;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,8 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                  return TEST ?content_:coords.getAll();
+                  return (TEST ?content_:coords.getAll())
+                          .toArray(new AvatarContent[0]);
             }
 
             @Override
@@ -49,18 +51,14 @@ final class PageRenderView extends PlaneViewWorks {
 
             @Override
             public Object[] multiple() {
-                return new Object[]{
-                       TEST ? content_[1]:((List)content()).get(0)
-                        /*
-                       content[0],
-                       content[2],
-                       content[3],
-              */  };
+                return multipleNext;
             }
         };
     }
 
-    private AvatarContent[] content_ = false ?
+    private List<AvatarContent> content_ =
+            Arrays.asList(
+            false ?
             new AvatarContent[]{
                     new Coord(true, 10f),
                     new Coord(true, 200f),
@@ -70,5 +68,12 @@ final class PageRenderView extends PlaneViewWorks {
             new Coord(false, 10f),
             new Coord(true, 200f),
             new Coord(false, 100f),
-    };
+    });
+    Object[] multipleNext = {
+            TEST ? content_.get(1) : coords.getAll().get(0)
+            /*
+           content[0],
+           content[2],
+           content[3],
+  */};
 }

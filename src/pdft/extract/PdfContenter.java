@@ -29,7 +29,7 @@ final class PdfContenter extends ViewerContenter{
 	public static final String ARG_WRAP="wrapCode";
 	private static int defaults=1;
 	private final FacetAppSurface app;
-	private PageRenderView pageView;
+	private PageRenderView renderView;
 	PdfContenter(Object source, FacetAppSurface app){
 		super(source);
 		if((this.app=app)==null)throw new IllegalArgumentException(
@@ -44,8 +44,12 @@ final class PdfContenter extends ViewerContenter{
 		return new PdfViewable(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
+				if(definition instanceof Coord){
+
+
+				}
 				SSelection selection=super.defineSelection(definition);
-				if(pageView!=null)setPageViewToRotation(pageView);
+				if(renderView !=null)setPageViewToRotation(renderView);
 				return selection;
 			}
 		};
@@ -58,10 +62,11 @@ final class PdfContenter extends ViewerContenter{
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
 				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
-		PageRenderView render=new PageRenderView(pageCoords, new PageAvatarPolicies());
-		render.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
-		SFrameTarget page = new SFrameTarget(render);
-		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
+		renderView =new PageRenderView(pageCoords, new PageAvatarPolicies());
+		renderView.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
+		SFrameTarget page = new SFrameTarget(renderView);
+		if (false)
+			((PdfViewable)viewable).setPageViewToRotation(this.renderView =(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,
 						/*

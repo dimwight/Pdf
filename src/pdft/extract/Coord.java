@@ -38,8 +38,8 @@ final class Coord //extends Tracer
         void add(boolean forX) {
             (forX?this.forX:forY).add(new Coord(forX,10));
         }
-         Collection<Coord> getAll() {
-            ArrayList<Coord> all = new ArrayList<>(forX);
+         List<Coord> getAll() {
+            ArrayList<Coord> all = new ArrayList(forX);
             all.addAll(forY);
             return all;
         }

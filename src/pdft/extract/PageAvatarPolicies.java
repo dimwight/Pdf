@@ -70,7 +70,8 @@ final class PageAvatarPolicies extends AvatarPolicies{
             }
             @Override
             public Object[] newDragDropEdits(Point anchorAt, Point dragAt) {
-                return new Object[]{newUpdate(anchorAt, dragAt)};
+                then.at=newUpdate(anchorAt, dragAt).at;
+                return new Object[]{then};
             }
             private Coord newUpdate(Point anchorAt, Point dragAt) {
                 boolean forX = then.forX;
