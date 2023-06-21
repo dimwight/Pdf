@@ -111,6 +111,6 @@ class PdfViewable extends ViewableFrame{
 	}
 	public void setFramedState(Object stateSpec,boolean interim){}
 	void setPageViewToRotation(PageRenderView view){
-		view.setToPageRotation(new PDPage((COSDictionary)selection().single()));
+		view.setToPage(new PDPage((COSDictionary)selection().single()));
 	}
 }

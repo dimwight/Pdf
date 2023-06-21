@@ -45,8 +45,8 @@ final class PdfContenter extends ViewerContenter{
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){
-
-
+					renderView.defineNextSelection((Coord) definition);
+					return selection();
 				}
 				SSelection selection=super.defineSelection(definition);
 				if(renderView !=null)setPageViewToRotation(renderView);
@@ -55,15 +55,14 @@ final class PdfContenter extends ViewerContenter{
 		};
 	}
 	private final Map<PDPage,Coords>pageCoords=new HashMap();
-	Coords coords=new Coords();
 	@Override
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
 				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
-		renderView =new PageRenderView(pageCoords, new PageAvatarPolicies());
-		renderView.setToPageRotation(new PDPage((COSDictionary)viewable.selection().single()));
+		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies()))
+			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(renderView);
 		if (false)
 			((PdfViewable)viewable).setPageViewToRotation(this.renderView =(PageRenderView)page.framed);
