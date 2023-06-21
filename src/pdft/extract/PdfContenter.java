@@ -45,7 +45,7 @@ final class PdfContenter extends ViewerContenter{
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){
-					renderView.defineNextSelection((Coord) definition);
+					renderView.defineSelection((Coord) definition);
 					return selection();
 				}
 				SSelection selection=super.defineSelection(definition);

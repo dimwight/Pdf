@@ -40,6 +40,9 @@ final class Coord implements AvatarContent, Serializable {
     boolean isJunk() {
        return at<atFirst;
     }
+    void setJunk() {
+        at=atFirst -1;
+    }
     final static class Coords implements Serializable {
         private final List<Coord> forX=new ArrayList();
         private final List<Coord> forY=new ArrayList();

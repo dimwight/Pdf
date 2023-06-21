@@ -59,28 +59,21 @@ final class PageAvatarPolicies extends AvatarPolicies{
     public DragPolicy dragPolicy(AvatarView view, AvatarContent[] content, Object hit, PainterSource p) {
         PageRenderView page = (PageRenderView) view;
         Coord then= (Coord) content[0];
-        if(!then.isLive()){
-            page.coords.add(then.forX);
-        }
         return new DragPolicy() {
+            boolean isJunk;
             @Override
             public Painter[] newDragPainters(Point anchorAt, Point dragAt) {
                 Coord now;
                 now = newUpdate(anchorAt, dragAt);
-                if(now.isJunk()){
-                    page.coords.remove(then);
-                }
+                isJunk=now.isJunk();
                 return new Painter[]{
                         p.line(now.newViewLine(page), Dragging.shade, 0, false)
                 };
             }
             @Override
             public Object[] newDragDropEdits(Point anchorAt, Point dragAt) {
-                boolean removing = true;
-                if(removing) {
-                     return new Object[]{};
-                }
                 then.setAt(newUpdate(anchorAt, dragAt).getAt());
+                if(isJunk) then.setJunk();
                 return new Object[]{then};
             }
             private Coord newUpdate(Point anchorAt, Point dragAt) {

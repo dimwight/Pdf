@@ -24,9 +24,17 @@ final class PageRenderView extends PlaneViewWorks {
                     new Coord(false, 100f),
             });
     private static final boolean TEST =false;
-    Object selectNext;
-    void defineNextSelection(Coord selectNext) {
-        this.selectNext =selectNext;
+    Coord selectionNow;
+    void defineSelection(Coord definition) {
+        if(definition.isJunk()) {
+            coords.remove(selectionNow);
+            definition=null;
+        }
+        else if(selectionNow!=null&&
+                !selectionNow.isLive()){
+            coords.add(selectionNow.forX);
+        }
+        selectionNow = definition;
     }
    public SSelection newViewerSelection() {
         return new SSelection() {
@@ -44,8 +52,8 @@ final class PageRenderView extends PlaneViewWorks {
             @Override
             public Object[] multiple() {
                 return new Object[]{
-                        selectNext != null ? selectNext
-                                : coords.getAll().get(0)
+                        selectionNow == null ? coords.getAll().get(0)
+                                : selectionNow
                 };
             }
         };
