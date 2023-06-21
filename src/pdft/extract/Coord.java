@@ -11,20 +11,34 @@ import java.util.List;
 
 final class Coord implements AvatarContent, Serializable {
     final boolean forX;
-    double at;
+    private double at;
+    private final double atFirst;
     private static int ids;
     final int id=ids++;
-      Coord(boolean forX, double at) {
+   Coord(boolean forX, double at) {
         this.forX = forX;
-        this.at = at;
+        this.setAt(at);
+        atFirst=at;
     }
     Line newViewLine(PlaneView view) {
         return new Line(new double[]{
-                forX ? at : 0,
-                forX ? 0 : at,
-                forX ? at : view.showWidth(),
-                forX ? view.showHeight() : at,
+                forX ? getAt() : 0,
+                forX ? 0 : getAt(),
+                forX ? getAt() : view.showWidth(),
+                forX ? view.showHeight() : getAt(),
         });
+    }
+    double getAt() {
+        return at;
+    }
+    void setAt(double at) {
+        this.at = at;
+    }
+    boolean isLive() {
+        return at>atFirst;
+    }
+    boolean isJunk() {
+       return at<atFirst;
     }
     final static class Coords implements Serializable {
         private final List<Coord> forX=new ArrayList();
@@ -43,6 +57,9 @@ final class Coord implements AvatarContent, Serializable {
             ArrayList<Coord> all = new ArrayList(forX);
             all.addAll(forY);
             return Collections.unmodifiableList(all);
+        }
+        void remove(Coord coord) {
+            (coord.forX?forX:forY).remove(coord);
         }
     }
 }

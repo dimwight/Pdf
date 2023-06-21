@@ -57,25 +57,35 @@ final class PageAvatarPolicies extends AvatarPolicies{
     }
     @Override
     public DragPolicy dragPolicy(AvatarView view, AvatarContent[] content, Object hit, PainterSource p) {
-        PlaneView page = (PlaneView) view;
+        PageRenderView page = (PageRenderView) view;
         Coord then= (Coord) content[0];
+        if(!then.isLive()){
+            page.coords.add(then.forX);
+        }
         return new DragPolicy() {
             @Override
             public Painter[] newDragPainters(Point anchorAt, Point dragAt) {
                 Coord now;
                 now = newUpdate(anchorAt, dragAt);
+                if(now.isJunk()){
+                    page.coords.remove(then);
+                }
                 return new Painter[]{
                         p.line(now.newViewLine(page), Dragging.shade, 0, false)
                 };
             }
             @Override
             public Object[] newDragDropEdits(Point anchorAt, Point dragAt) {
-                then.at=newUpdate(anchorAt, dragAt).at;
+                boolean removing = true;
+                if(removing) {
+                     return new Object[]{};
+                }
+                then.setAt(newUpdate(anchorAt, dragAt).getAt());
                 return new Object[]{then};
             }
             private Coord newUpdate(Point anchorAt, Point dragAt) {
                 boolean forX = then.forX;
-                return new Coord(forX, then.at +
+                return new Coord(forX, then.getAt() +
                         (forX ? dragAt.x() - anchorAt.x() : dragAt.y() - anchorAt.y()));
             }
         };
