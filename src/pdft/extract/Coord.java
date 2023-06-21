@@ -53,7 +53,7 @@ final class Coord implements AvatarContent, Serializable {
             add(false);
         }
         void add(boolean forX) {
-            double at = forX? view.showWidth()/10 : view.showHeight()/20;
+            double at = forX? view.showWidth()/10 : view.showHeight()/10;
             (forX?this.forX:forY).add(new Coord(forX, at));
         }
         List<Coord> getAll() {
