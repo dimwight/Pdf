@@ -60,12 +60,9 @@ final class PageAvatarPolicies extends AvatarPolicies{
         PageRenderView page = (PageRenderView) view;
         Coord then= (Coord) content[0];
         return new DragPolicy() {
-            boolean isJunk;
             @Override
             public Painter[] newDragPainters(Point anchorAt, Point dragAt) {
-                Coord now;
-                now = newUpdate(anchorAt, dragAt);
-                isJunk=now.isJunk();
+                Coord now = newUpdate(anchorAt, dragAt);
                 return new Painter[]{
                         p.line(now.newViewLine(page), Dragging.shade, 0, false)
                 };
@@ -73,7 +70,6 @@ final class PageAvatarPolicies extends AvatarPolicies{
             @Override
             public Object[] newDragDropEdits(Point anchorAt, Point dragAt) {
                 then.setAt(newUpdate(anchorAt, dragAt).getAt());
-                if(isJunk) then.setJunk();
                 return new Object[]{then};
             }
             private Coord newUpdate(Point anchorAt, Point dragAt) {
