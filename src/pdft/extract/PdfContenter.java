@@ -21,7 +21,7 @@ import java.util.Map;
 import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.extract.PageTexts.*;
+import static pdft.extract.HtmlTexts.*;
 import static pdft.extract.PdfViewable.COS_FONTS;
 import static pdft.extract.PdfViewable.COS_LAST;
 
@@ -59,9 +59,9 @@ final class PdfContenter extends ViewerContenter{
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
-				extracted=new PageTextView(TextStyle.Extracted,app.spec).newFramed(),
-				stream=new PageTextView(TextStyle.Stream,app.spec).newFramed();;
-		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies()))
+				extracted=new PageHtmView(TextStyle.Extracted,app.spec).newFramed(),
+				stream=new PageHtmView(TextStyle.Stream,app.spec).newFramed();;
+		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget page = new SFrameTarget(renderView);
 		if (false)
@@ -83,8 +83,8 @@ final class PdfContenter extends ViewerContenter{
 				final SView view = ((ViewerTarget) area1.activeFaceted()).view();
 				final boolean forPage = view instanceof PageRenderView,
 						forTree = view instanceof CosTreeView,
-						forStream = view instanceof PageTextView
-								&& ((PageTextView) view).style == TextStyle.Stream;
+						forStream = view instanceof PageHtmView
+								&& ((PageHtmView) view).style == TextStyle.Stream;
 				return new ViewerAreaMaster() {
 					@Override
 					public Viewer viewerMaster() {
@@ -101,9 +101,9 @@ final class PdfContenter extends ViewerContenter{
 						if (!forStream) return null;
 						STargeter[] elements = targeter.elements();
 						return app.ff.toolGroups(targeter, HINT_NONE,
-								app.ff.textualField(elements[PageTextView.TARGET_COUNT], 5, HINT_USAGE_FORM),
-								app.ff.togglingCheckboxes(elements[PageTextView.TARGET_WRAP], HINT_BARE),
-								true ? null : app.ff.togglingButtons(elements[PageTextView.TARGET_WRAP], HINT_BARE),
+								app.ff.textualField(elements[PageHtmView.TARGET_COUNT], 5, HINT_USAGE_FORM),
+								app.ff.togglingCheckboxes(elements[PageHtmView.TARGET_WRAP], HINT_BARE),
+								true ? null : app.ff.togglingButtons(elements[PageHtmView.TARGET_WRAP], HINT_BARE),
 								app.ff.spacerTall(30)
 						);
 					}
@@ -123,7 +123,7 @@ final class PdfContenter extends ViewerContenter{
 		Object activeView=((SFrameTarget)root.view().target()).framed;
 		STargeter[]pane=root.elements(),paneShow=pane[PANE_SHOW].elements(),
 			content=root.content().elements();
-		boolean extractedOrCodeIsActive=activeView instanceof PageTextView,
+		boolean extractedOrCodeIsActive=activeView instanceof PageHtmView,
 			renderIsActive=activeView instanceof PageRenderView,
 			extractedOrCodePaneSet=((SToggling)paneShow[4].target()).isSet()
 				||((SToggling)paneShow[5].target()).isSet(),
@@ -132,8 +132,7 @@ final class PdfContenter extends ViewerContenter{
 				target().isLive();
 		content[COS_FONTS].target().setLive(
 				extractedOrCodeIsActive||(extractedOrCodePaneSet&&noPaneMaximised));
-		content[
-				COS_LAST+1].target().setLive(
+		content[COS_LAST+1].target().setLive(
 				renderIsActive||(renderPaneSet&&noPaneMaximised));
 	}
 	@Override

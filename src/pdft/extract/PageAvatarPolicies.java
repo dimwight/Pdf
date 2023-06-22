@@ -2,6 +2,7 @@ package pdft.extract;
 
 import facets.core.app.SViewer;
 import facets.core.app.avatar.*;
+import facets.facet.app.FacetAppSurface;
 import facets.util.geom.Point;
 import facets.util.shade.Shade;
 import facets.util.shade.Shades;
@@ -10,7 +11,11 @@ import static facets.util.shade.Shades.*;
 import static pdft.extract.PageAvatarPolicies.ShadeState.*;
 
 final class PageAvatarPolicies extends AvatarPolicies{
-    public static final boolean TEST =false;
+    private static final boolean TEST =false;
+    private final FacetAppSurface app;
+    PageAvatarPolicies(FacetAppSurface app) {
+        this.app = app;
+    }
     enum ShadeState {
         Plain (TEST ?red:red),
         Selected (TEST ?yellow:magenta.darker()),
@@ -27,8 +32,16 @@ final class PageAvatarPolicies extends AvatarPolicies{
     @Override
     public Painter getBackgroundPainter(SViewer viewer, PainterSource p) {
         PlaneView view = (PlaneView) viewer.view();
-        return p.bar(0,0,view.showWidth(),view.showHeight(),
-                Shades.white,false);
+        PdfViewable viewable = (PdfViewable) app.findActiveContent().contentFrame();
+        DocTexts texts=viewable.texts;
+        int pageAt= viewable.viewPageAt;
+        int viewsAt=2;
+        return graphics -> {
+            p.bar(0, 0, view.showWidth(), view.showHeight(), Shades.white, false)
+                    .paintInGraphics(graphics);
+            new PagePainters(texts, pageAt, app).newPainter(viewsAt, true)
+                    .paintInGraphics(graphics);
+        };
     }
     @Override
     public AvatarPolicy viewerPolicy(SViewer viewer, AvatarContent content, PainterSource p) {

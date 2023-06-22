@@ -7,6 +7,20 @@
       <root url="jar://$PROJECT_DIR$/xtra/pdfbox/commons-logging-1.1.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/ant/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/examples/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/fontbox/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/fontbox/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/jempbox/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/jempbox/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/lucene/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/pdfbox/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/pdfbox/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/preflight/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/preflight/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/xmpbox/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/xtra/pdfbox/pdfbox-1.8.1-src.zip!/pdfbox-1.8.1/xmpbox/src/test/java" />
+    </SOURCES>
   </library>
 </component>

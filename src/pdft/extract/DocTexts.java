@@ -17,8 +17,7 @@ import java.util.List;
 
 import static facets.util.Util.sf;
 
-class
-DocTexts extends Tracer{
+class DocTexts extends Tracer{
 	public PageChars getChars(int pageAt){
 		stripper.setStartPage(pageAt+1);
 		stripper.setEndPage(pageAt+1);

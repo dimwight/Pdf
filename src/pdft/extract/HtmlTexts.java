@@ -10,7 +10,7 @@ import org.apache.pdfbox.cos.COSDocument;
 
 import static facets.util.Regex.replaceAll;
 
-final class PageTexts extends DocTexts {
+final class HtmlTexts extends DocTexts {
 	public enum TextStyle{Extracted,Stream;
 		public String title(){
 			return this==Extracted?"E&xtracted":"Stream";
@@ -18,16 +18,9 @@ final class PageTexts extends DocTexts {
 	}
 	private final PagePainters emptyPainters=new PagePainters(this,0,null);
 	private final FacetAppSurface app;
-	PageTexts(COSDocument cosDoc, FacetAppSurface app){
+	HtmlTexts(COSDocument cosDoc, FacetAppSurface app){
 		super(cosDoc);
 		this.app=app;
-	}
-	PagePainters getPainters(final int pageAt){
-		if(false)trace(".getPainters: pageAt=",pageAt);
-		traceDebug(".getPainters:=",this);
-		PagePainters painters = new PagePainters(PageTexts.this, pageAt, app);
-		if(false)trace(".getPainters: painters=",painters);
-		return painters!=null?painters:emptyPainters;
 	}
 	@Override
 	protected void traceOutput(String msg){
@@ -38,7 +31,7 @@ final class PageTexts extends DocTexts {
 		if(false)Times.printElapsed("Texts..buildPageContent extracted="+extracted);
 		final int basePts=FacetFactory.fontSizes[FacetFactory.fontSizeAt];
 		String html=new ItemProvider<String>(app.ff.providingCache(),doc,
-				PageTexts.class.getSimpleName()+".newHtml"){
+				HtmlTexts.class.getSimpleName()+".newHtml"){
 			@Override
 			protected String newItem(){
 				return new HtmlBuilder(){

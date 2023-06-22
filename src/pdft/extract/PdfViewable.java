@@ -29,15 +29,15 @@ class PdfViewable extends ViewableFrame{
 	static final int COS_FONTS=2;
 	static final int COS_LAST=COS_FONTS;
 	private final ProvidingCache appCache;
-	private final PageTexts texts;
 	private final List<COSDictionary>cosPages;
 	private final int pageCount;
 	private final SNumeric goToPage;
-	private int viewPageAt;
+	final DocTexts texts;
+	int viewPageAt=-1;
 	PdfViewable(String title, COSDocument cosDoc, FacetAppSurface app){
 		super(title,cosDoc);
 		appCache=app.ff.providingCache();
-		texts=new PageTexts(cosDoc,app);
+		texts=new HtmlTexts(cosDoc,app);
 		cosPages=new ArrayList();
 		for(Object each:new PDDocument(cosDoc).getDocumentCatalog().getAllPages())
 			cosPages.add(((PDPage)each).getCOSDictionary());
@@ -72,8 +72,8 @@ class PdfViewable extends ViewableFrame{
 		}
 		return view instanceof AvatarView?
 				((PageRenderView)view).newViewerSelection()
-			:view instanceof PageTextView ?
-				((PageTextView)view).newViewerSelection(texts,pageAt)
+			:view instanceof PageHtmView ?
+				((PageHtmView)view).newViewerSelection((HtmlTexts) texts,pageAt)
 			:view.newViewerSelection(viewer,selection());
 	}
 	@Override

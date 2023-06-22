@@ -8,9 +8,7 @@ import facets.util.SizeEstimable;
 import facets.util.Tracer;
 import facets.util.app.WatchableOperation;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.TextPosition;
 import org.apache.pdfbox.util.TextPositionComparator;
 import pdft.extract.DocTexts.PageChars;
@@ -22,26 +20,24 @@ import java.util.List;
 import java.util.*;
 
 final class PagePainters extends Tracer implements SizeEstimable{
-	@Override
+		@Override
 	protected void traceOutput(String msg){
 		if(true)super.traceOutput(msg);
 	}
-	PageChar[]selectionChars=new PageChar[]{};
-	private final List<PageChar>plainChars=new ArrayList(),fullChars=new ArrayList();
-	private final FacetAppSurface app;
-	private final boolean empty;
-	private final PDDocument doc;
-	private final PDPage page;
-	private final int pageAt,rotation;
-	private final PDRectangle mediaBox;
+	private final List<PageChar>plainChars=new ArrayList();
+	private final List<PageChar>fullChars=new ArrayList();
 	private List<PageChar>paintChars;
-	PagePainters(pdft.extract.DocTexts texts, int pageAt, FacetAppSurface app){
-		empty=(this.app=app)==null;
-		doc=texts.doc;
+	private final FacetAppSurface app;
+	private final PDPage page;
+	private final int pageAt;
+	private final int rotation;
+	private final Dimension pageSize;
+	PagePainters(DocTexts texts, int pageAt, FacetAppSurface app){
+		this.app=app;
 		PageChars chars=texts.getChars(this.pageAt=pageAt);
 		page=chars.page;
 		rotation=page.findRotation();
-		mediaBox=page.findMediaBox();
+		pageSize = page.findMediaBox().createDimension();
 		for(TextPosition textChar:chars.textChars)
 			if(textChar!=null)plainChars.add(new PageChar(textChar,rotation,0,false));
 	}
@@ -49,20 +45,15 @@ final class PagePainters extends Tracer implements SizeEstimable{
 	public String toString(){
 		return Debug.info(this)+": Page #"+pageAt;
 	}
-	Painter newTextPainter(final int viewsAt){
-		final boolean drawPage=false;
-		final Dimension pageSize=mediaBox.createDimension();
+	Painter newPainter(int viewsAt, boolean drawPage){
 		final boolean flip=rotation!=0;
 		final int paintWidth=!flip?pageSize.width:pageSize.height,
 				paintHeight=!flip?pageSize.height:pageSize.width;
-		return empty?new Painter(){
-			@Override
-			public void paintInGraphics(Object graphics){}
-		}
-		:new Painter(){
+		return app==null? graphics -> {}
+				:new Painter(){
 			final double scale=1;
 			int width=(int)(paintWidth*scale),height=(int)(paintHeight*scale);
-			final Image image=!drawPage?null:new ImageProviderAwt(
+			final Image image=!drawPage ?null:new ImageProviderAwt(
 					app.ff.providingCache(),
 					PagePainters.this,PagePainters.class.getSimpleName()+".newTextPainter",
 					width,height){
@@ -88,16 +79,16 @@ final class PagePainters extends Tracer implements SizeEstimable{
 				else paintChars=plainChars;
 				for(PageChar c:paintChars)c.paintInGraphics(paint.create());
 			}
-			private void drawPageGraphics(final Graphics2D drawer,final double scale){
+			private void drawPageGraphics(final Graphics2D g2,final double scale){
 			WatchableOperation op=new WatchableOperation("PagePainters.drawPageGraphics"){
 			@Override
 			public void doSimpleOperation(){
-				final List<TextPosition>texts=new ArrayList();
 				final Map<TextPosition,Color>colors=new HashMap();
-				drawer.scale(scale,scale);
+				final List<TextPosition>texts=new ArrayList();
+				g2.scale(scale,scale);
 				if(flip){
-					drawer.translate(pageSize.height,0);
-					drawer.rotate(rotation/360f*2*Math.PI);
+					g2.translate(pageSize.height,0);
+					g2.rotate(rotation/360f*2*Math.PI);
 				}
 				try{
 					new PageDrawer(){
@@ -111,16 +102,16 @@ final class PagePainters extends Tracer implements SizeEstimable{
 								throw new RuntimeException(e);
 							}
 						}
-					}.drawPage(drawer,page,pageSize);
+					}.drawPage(g2,page,pageSize);
 				}catch(IOException e){
 					throw new RuntimeException(e);
 				}
-				if(fullChars.size()>0)return;
-        Collections.sort(texts,new TextPositionComparator());
-        for(TextPosition t:texts)
-        	fullChars.add(new PageChar(t,rotation,colors.get(t).getRGB(),false));
+				if(!fullChars.isEmpty())return;
+				Collections.sort(texts,new TextPositionComparator());
+				for(TextPosition t:texts)
+					fullChars.add(new PageChar(t,rotation,colors.get(t).getRGB(),false));
 			}};
-				if(true)app.runWatched(op);
+				if(false)app.runWatched(op);
 				else op.doOperations();
 			}
 			@Override

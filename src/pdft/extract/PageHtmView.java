@@ -11,11 +11,11 @@ import facets.util.Debug;
 import facets.util.Times;
 import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
-import pdft.extract.PageTexts.TextStyle;
+import pdft.extract.HtmlTexts.TextStyle;
 
 import static pdft.extract.PdfContenter.ARG_WRAP;
 
-final class PageTextView extends HtmlView.SmartView{
+final class PageHtmView extends HtmlView.SmartView{
 	static final int TARGET_COUNT=0,TARGET_WRAP=1;
 	private final STarget codeCount=new STextual("Lines",new Coupler(){
 			@Override
@@ -27,7 +27,7 @@ final class PageTextView extends HtmlView.SmartView{
 		wrap;
 	final TextStyle style;
 	int lineCount;
-	PageTextView(TextStyle style, AppValues values){
+	PageHtmView(TextStyle style, AppValues values){
 		super(style.title());
 		this.style=style;
 		final ValueNode nature=values.nature();
@@ -45,7 +45,7 @@ final class PageTextView extends HtmlView.SmartView{
 		if(false)Times.printElapsed(Debug.info(this)+msg);
 		else if(false)super.traceOutput(msg);
 	}
-	SSelection newViewerSelection(PageTexts texts, int pageAt){
+	SSelection newViewerSelection(HtmlTexts texts, int pageAt){
 		final String raw=texts.newHtml(pageAt,style),lines[]=raw.split("\\s*<p>");
 		lineCount=lines.length;
 		return new SSelection(){
