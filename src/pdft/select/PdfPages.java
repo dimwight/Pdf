@@ -18,8 +18,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-
-class PdfViewable extends ViewableFrame{
+import pdft.select.PageAvatarPolicies.PageRenderView;
+class PdfPages extends ViewableFrame{
 	static final int COS_GO_TO_PAGE=0,COS_PAGE_COUNT=1,COS_FONTS=2,
 		COS_LAST=COS_FONTS;
 	private final ProvidingCache appCache;
@@ -28,7 +28,7 @@ class PdfViewable extends ViewableFrame{
 	private final int pageCount;
 	private final SNumeric goToPage;
 	private int viewPageAt;
-	PdfViewable(String title, COSDocument cosDoc, FacetAppSurface app){
+	PdfPages(String title,COSDocument cosDoc,FacetAppSurface app){
 		super(title,cosDoc);
 		appCache=app.ff.providingCache();
 		texts=new PageTexts(cosDoc,app);

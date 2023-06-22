@@ -12,6 +12,7 @@ import facets.core.app.avatar.Painter;
 import facets.core.app.avatar.Painter.Style;
 import facets.core.app.avatar.PainterSource;
 import facets.core.app.avatar.PlaneView;
+import facets.core.app.avatar.PlaneViewWorks;
 import facets.core.app.avatar.AvatarContent.State;
 import facets.core.superficial.SFrameTarget;
 import facets.core.superficial.SIndexing;
@@ -20,16 +21,33 @@ import facets.util.Debug;
 import facets.util.app.AppValues;
 import facets.util.geom.Line;
 import facets.util.geom.Point;
+import facets.util.geom.Vector;
 import facets.util.shade.Shades;
 import facets.util.tree.ValueNode;
+import java.awt.Dimension;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 final class PageAvatarPolicies extends AvatarPolicies{
 	static final int DISPLAY_TEXT=0,DISPLAY_STANDARD=1,DISPLAY_BEST=2;
-	static final double MARGINS=40;
+	private static final double MARGINS=40;
 	final SIndexing views;
 	private PagePainters page;
-
+	final static class PageRenderView extends PlaneViewWorks{
+		PageRenderView(PageAvatarPolicies avatars){
+			super("Re&ndering",0,0,new Vector(0,0),avatars);
+		}
+		@Override
+		public Object backgroundStyle(){
+			return Shades.gray;
+		}
+		void setToPageRotation(PDPage page){
+			boolean rotated=page.findRotation()!=0;
+			Dimension size=page.findMediaBox().createDimension();
+			double across=rotated?size.height:size.width,down=rotated?size.width
+					:size.height;
+			setShowValues(across+MARGINS,down+MARGINS,new Vector(MARGINS,MARGINS).scaled(0.5),1);
+		}
+	}
 	PageAvatarPolicies(AppValues values){
 		final ValueNode nature=values.nature();
 		views=new SIndexing("Page Render",new Object[]{"Text Only","Text and &Graphics"},
@@ -63,7 +81,8 @@ final class PageAvatarPolicies extends AvatarPolicies{
 			}
 		};
 	}
-	public AvatarPolicy avatarPolicy(SViewer viewer,AvatarContent content,
+	@Override
+	public AvatarPolicy viewerPolicy(SViewer viewer,AvatarContent content,
 			final PainterSource p){
 		return new AvatarPolicy(){
 			@Override

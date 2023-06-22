@@ -2,7 +2,7 @@ package pdft.select;
 import static facets.core.app.ActionViewerTarget.*;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.select.PdfViewable.*;
+import static pdft.select.PdfPages.*;
 
 import facets.core.app.AppSurface;
 import facets.core.app.AreaRoot;
@@ -35,11 +35,10 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import org.apache.pdfbox.cos.COSDocument;
 import pdft.PdfCore;
-
+import pdft.select.PageAvatarPolicies.PageRenderView;
 final class PdfContenter extends ViewerContenter{
-	public static final String ARG_MARK="mark";
-	public static final String ARG_RENDER="renderGraphics";
-	public static final String ARG_WRAP="wrapCode";
+	public static final String ARG_MARK="mark",ARG_RENDER="renderGraphics",
+		ARG_WRAP="wrapCode";
 	private static final String NAME_DEFAULT="Default";
 	static final String TITLE_REOPEN="Re-open file?";
 	final static FileSpecifier pdfFiles=new FileSpecifier("pdf",
@@ -92,7 +91,7 @@ final class PdfContenter extends ViewerContenter{
 				((File)source).getName(),
 				toMark=app.spec.nature().getString(ARG_MARK);
 		if(!toMark.equals("")) PageTexts.markDocPages(cosDoc,toMark);
-		return new PdfViewable(title,cosDoc,app){
+		return new PdfPages(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				SSelection selection=super.defineSelection(definition);
@@ -113,7 +112,7 @@ final class PdfContenter extends ViewerContenter{
 			page=pagePolicies.newFramedView(viewable),
 			extracted=new PageTextView(PageTexts.TextStyle.Extracted,app.spec).newFramed(),
 			stream=new PageTextView(PageTexts.TextStyle.Stream,app.spec).newFramed();
-		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
+		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,document,trailer,page,extracted,stream});
 	}

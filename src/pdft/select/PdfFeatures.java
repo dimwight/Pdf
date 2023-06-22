@@ -1,20 +1,21 @@
 package pdft.select;
-
+import static facets.core.app.AppSurface.ContentStyle.*;
+import static facets.core.app.TextView.*;
+import static pdft.select.PdfPages.*;
 import facets.core.app.FeatureHost.LayoutFeatures;
 import facets.core.app.MenuFacets;
 import facets.core.app.SContentAreaTargeter;
 import facets.core.app.ViewerTarget;
-import facets.core.superficial.*;
+import facets.core.superficial.SFacet;
+import facets.core.superficial.SNumeric;
+import facets.core.superficial.STargeter;
+import facets.core.superficial.STextual;
+import facets.core.superficial.TargeterCore;
 import facets.facet.AppFacetsBuilder;
 import facets.facet.AreaFacets.PaneMenuStyle;
 import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
 import facets.util.NumberPolicy;
-
-import static facets.core.app.AppSurface.ContentStyle.SINGLE;
-import static facets.core.app.TextView.PAGE_NEXT;
-import static facets.core.app.TextView.PAGE_PREVIOUS;
-import static pdft.select.PdfViewable.*;
 final class PdfFeatures extends FacetFactory{
 	private final FacetAppSurface app;
 	private final SContentAreaTargeter area;
@@ -41,8 +42,9 @@ final class PdfFeatures extends FacetFactory{
 		mainMenu=menuRoot(new AppFacetsBuilder(this,area
 				).newMenuFacets());
 		paneMenu=menuRoot(areas().new PaneFacets("Pane",area){
+			@Override
 			protected PaneMenuStyle style(){
-				return PaneMenuStyle.Simple;
+				return PaneMenuStyle.Dialog;
 			}
 		});
 		windowMenu=app.contentStyle==SINGLE?null

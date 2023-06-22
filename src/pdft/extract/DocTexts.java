@@ -17,7 +17,8 @@ import java.util.List;
 
 import static facets.util.Util.sf;
 
-class DocTexts extends Tracer{
+class
+DocTexts extends Tracer{
 	public PageChars getChars(int pageAt){
 		stripper.setStartPage(pageAt+1);
 		stripper.setEndPage(pageAt+1);
@@ -145,25 +146,5 @@ class DocTexts extends Tracer{
 			return e.getMessage();
 		}
 	}
-	public static void markDocPages(COSDocument doc,String toMark){
-		for(Object each:new PDDocument(doc).getDocumentCatalog().getAllPages())
-			throw new RuntimeException("Not implemented for "+Debug.info(each));
-	}
 }
-/*
-This file forms part of Version 0.3.62 of pdfInspect 
-http://pdfinspector.sourceforge.net
-Copyright (C) 2011  David M Wright 
-This library is free software; you can redistribute it and/or modify it under 
-the terms of the GNU Lesser General Public License as published by the 
-Free Software Foundation; either release 3 of the License, or (at your 
-option) any later release.
-This library is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
-A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more 
-details.
-You should have received a copy of the GNU Lesser General Public License along 
-with this library; if not, write to the Free Software Foundation, Inc., 
-59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*/
 
