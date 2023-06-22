@@ -2,7 +2,7 @@ package pdft.select;
 import static facets.core.app.ActionViewerTarget.*;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.select.PdfPages.*;
+import static pdft.select.PdfViewable.*;
 
 import facets.core.app.AppSurface;
 import facets.core.app.AreaRoot;
@@ -90,8 +90,8 @@ final class PdfContenter extends ViewerContenter{
 		String title=defaultSource?NAME_DEFAULT+defaults++:
 				((File)source).getName(),
 				toMark=app.spec.nature().getString(ARG_MARK);
-		if(!toMark.equals("")) PageTexts.markDocPages(cosDoc,toMark);
-		return new PdfPages(title,cosDoc,app){
+		if(!toMark.equals("")) HtmlTexts.markDocPages(cosDoc,toMark);
+		return new PdfViewable(title,cosDoc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				SSelection selection=super.defineSelection(definition);
@@ -110,9 +110,9 @@ final class PdfContenter extends ViewerContenter{
 			document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
 			trailer=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Trailer)),
 			page=pagePolicies.newFramedView(viewable),
-			extracted=new PageTextView(PageTexts.TextStyle.Extracted,app.spec).newFramed(),
-			stream=new PageTextView(PageTexts.TextStyle.Stream,app.spec).newFramed();
-		((PdfPages)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
+			extracted=new PageHtmlView(HtmlTexts.TextStyle.Extracted,app.spec).newFramed(),
+			stream=new PageHtmlView(HtmlTexts.TextStyle.Stream,app.spec).newFramed();
+		((PdfViewable)viewable).setPageViewToRotation(pageView=(PageRenderView)page.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,document,trailer,page,extracted,stream});
 	}
@@ -137,8 +137,8 @@ final class PdfContenter extends ViewerContenter{
 				final SView view=((ViewerTarget)area.activeFaceted()).view();
 				final boolean forPage=view instanceof PageRenderView,
 					forTree=view instanceof CosTreeView,
-					forStream=view instanceof PageTextView
-						&&((PageTextView)view).style== PageTexts.TextStyle.Stream;
+					forStream=view instanceof PageHtmlView
+						&&((PageHtmlView)view).style== HtmlTexts.TextStyle.Stream;
 				return new ViewerAreaMaster(){
 					@Override
 					public Viewer viewerMaster(){
@@ -153,9 +153,9 @@ final class PdfContenter extends ViewerContenter{
 						if(!forStream)return null;
 						STargeter[]elements=targeter.elements();
 						return ff.toolGroups(targeter,HINT_NONE,
-					  		ff.textualField(elements[PageTextView.TARGET_COUNT],5,HINT_USAGE_FORM),
-					  		ff.togglingCheckboxes(elements[PageTextView.TARGET_WRAP],HINT_BARE),
-					  		true?null:ff.togglingButtons(elements[PageTextView.TARGET_WRAP],HINT_BARE),
+					  		ff.textualField(elements[PageHtmlView.TARGET_COUNT],5,HINT_USAGE_FORM),
+					  		ff.togglingCheckboxes(elements[PageHtmlView.TARGET_WRAP],HINT_BARE),
+					  		true?null:ff.togglingButtons(elements[PageHtmlView.TARGET_WRAP],HINT_BARE),
 					  		ff.spacerTall(30)
 							);
 					}
@@ -173,7 +173,7 @@ final class PdfContenter extends ViewerContenter{
 		Object activeView=((SFrameTarget)root.view().target()).framed;
 		STargeter[]pane=root.elements(),paneShow=pane[PANE_SHOW].elements(),
 			content=root.content().elements();
-		boolean extractedOrCodeIsActive=activeView instanceof PageTextView,
+		boolean extractedOrCodeIsActive=activeView instanceof PageHtmlView,
 			renderIsActive=activeView instanceof PageRenderView,
 			extractedOrCodePaneSet=((SToggling)paneShow[4].target()).isSet()
 				||((SToggling)paneShow[5].target()).isSet(),

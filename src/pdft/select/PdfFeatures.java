@@ -1,7 +1,7 @@
 package pdft.select;
 import static facets.core.app.AppSurface.ContentStyle.*;
 import static facets.core.app.TextView.*;
-import static pdft.select.PdfPages.*;
+import static pdft.select.PdfViewable.*;
 import facets.core.app.FeatureHost.LayoutFeatures;
 import facets.core.app.MenuFacets;
 import facets.core.app.SContentAreaTargeter;

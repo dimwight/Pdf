@@ -1,6 +1,5 @@
-package pdft.select;
+package pdft.extract;
 
-import static pdft.select.PdfContenter.*;
 import facets.core.app.HtmlView;
 import facets.core.superficial.SFrameTarget;
 import facets.core.superficial.STarget;
@@ -12,9 +11,11 @@ import facets.util.Debug;
 import facets.util.Times;
 import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
-import pdft.select.PageTexts.TextStyle;
+import pdft.extract.HtmlTexts.TextStyle;
 
-final class PageTextView extends HtmlView.SmartView{
+import static pdft.extract.PdfContenter.ARG_WRAP;
+
+final class PageHtmlView extends HtmlView.SmartView{
 	static final int TARGET_COUNT=0,TARGET_WRAP=1;
 	private final STarget codeCount=new STextual("Lines",new Coupler(){
 			@Override
@@ -26,7 +27,7 @@ final class PageTextView extends HtmlView.SmartView{
 		wrap;
 	final TextStyle style;
 	int lineCount;
-	PageTextView(TextStyle style,AppValues values){
+	PageHtmlView(TextStyle style, AppValues values){
 		super(style.title());
 		this.style=style;
 		final ValueNode nature=values.nature();
@@ -44,7 +45,7 @@ final class PageTextView extends HtmlView.SmartView{
 		if(false)Times.printElapsed(Debug.info(this)+msg);
 		else if(false)super.traceOutput(msg);
 	}
-	SSelection newViewerSelection(PageTexts texts, int pageAt){
+	SSelection newViewerSelection(HtmlTexts texts, int pageAt){
 		final String raw=texts.newHtml(pageAt,style),lines[]=raw.split("\\s*<p>");
 		lineCount=lines.length;
 		return new SSelection(){
@@ -61,7 +62,7 @@ final class PageTextView extends HtmlView.SmartView{
 	}
   @Override
   public int quickLineHeight(){
-  	return style==TextStyle.Stream?17:-1;
+  	return style== TextStyle.Stream?17:-1;
   }
   @Override
   public boolean wrapLines(){

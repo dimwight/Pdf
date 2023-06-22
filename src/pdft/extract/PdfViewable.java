@@ -72,8 +72,8 @@ class PdfViewable extends ViewableFrame{
 		}
 		return view instanceof AvatarView?
 				((PageRenderView)view).newViewerSelection()
-			:view instanceof PageHtmView ?
-				((PageHtmView)view).newViewerSelection((HtmlTexts) texts,pageAt)
+			:view instanceof PageHtmlView ?
+				((PageHtmlView)view).newViewerSelection((HtmlTexts) texts,pageAt)
 			:view.newViewerSelection(viewer,selection());
 	}
 	@Override

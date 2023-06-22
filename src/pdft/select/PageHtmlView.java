@@ -1,5 +1,6 @@
-package pdft.extract;
+package pdft.select;
 
+import static pdft.select.PdfContenter.*;
 import facets.core.app.HtmlView;
 import facets.core.superficial.SFrameTarget;
 import facets.core.superficial.STarget;
@@ -11,11 +12,9 @@ import facets.util.Debug;
 import facets.util.Times;
 import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
-import pdft.extract.HtmlTexts.TextStyle;
+import pdft.select.HtmlTexts.TextStyle;
 
-import static pdft.extract.PdfContenter.ARG_WRAP;
-
-final class PageHtmView extends HtmlView.SmartView{
+final class PageHtmlView extends HtmlView.SmartView{
 	static final int TARGET_COUNT=0,TARGET_WRAP=1;
 	private final STarget codeCount=new STextual("Lines",new Coupler(){
 			@Override
@@ -27,7 +26,7 @@ final class PageHtmView extends HtmlView.SmartView{
 		wrap;
 	final TextStyle style;
 	int lineCount;
-	PageHtmView(TextStyle style, AppValues values){
+	PageHtmlView(TextStyle style, AppValues values){
 		super(style.title());
 		this.style=style;
 		final ValueNode nature=values.nature();
@@ -62,7 +61,7 @@ final class PageHtmView extends HtmlView.SmartView{
 	}
   @Override
   public int quickLineHeight(){
-  	return style== TextStyle.Stream?17:-1;
+  	return style==TextStyle.Stream?17:-1;
   }
   @Override
   public boolean wrapLines(){
