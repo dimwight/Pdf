@@ -5,7 +5,6 @@ import facets.util.Tracer;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
 
@@ -15,12 +14,59 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static facets.util.Util.sf;
-
 class DocTexts extends Tracer{
-	public PageChars getChars(int pageAt){
-		stripper.setStartPage(pageAt+1);
-		stripper.setEndPage(pageAt+1);
+	final class PageChars extends Tracer{
+		public final PDPage page;
+		public final List<TextPosition>textChars;
+		PageChars(PDPage page,List<TextPosition>textChars){
+			this.page=page;
+			this.textChars=textChars;
+		}
+	}
+	public final PDDocument doc;
+	public final List<PDPage>pages;
+	private final PDFTextStripper stripper;
+	private final List<TextPosition>stripChars=new ArrayList();
+	protected DocTexts(COSDocument cosDoc){
+		if(cosDoc==null)
+			throw new IllegalArgumentException("Null cos in "+Debug.info(this));
+		doc=new PDDocument(cosDoc);
+		try{
+			stripper=new PDFTextStripper(){
+				private final boolean test=false;
+				private int testCharAt=-1;
+				public boolean getSortByPosition(){
+					return!test;
+				}
+				@Override
+				public void processEncodedText(byte[]string)throws IOException{
+					if(false||test)trace(".processEncodedText: ",new String(string));
+					super.processEncodedText(string);
+				}
+				@Override
+				protected void processTextPosition(TextPosition text){
+					if(false||test){
+						trace(".processTextPosition: ",text.getCharacter());
+						testCharAt++;
+						stripChars.add(text);
+					}
+					super.processTextPosition(text);
+				}
+				protected void writePage()throws IOException{
+					if(!test)stripChars.clear();
+					else trace(".writePage: charsRaw=",stripChars.size());
+					super.writePage();
+					if(!test)stripChars.addAll(charactersByArticle.get(0));
+					else trace(".writePage: charsRaw="+stripChars.size()+" charAt="+testCharAt);
+				}
+			};
+		}catch(IOException e){
+			throw new RuntimeException(e);
+		}
+		pages=new PDDocument(cosDoc).getDocumentCatalog().getAllPages();
+	}
+	final public PageChars getChars(int pageAt){
+		setStripperPage(pageAt);
 		try{
 			String text=stripper.getText(doc);
 			final List<TextPosition>textChars=new ArrayList();
@@ -58,71 +104,22 @@ class DocTexts extends Tracer{
 			throw new RuntimeException(e);
 		}
 	}
-	final public class PageChars extends Tracer{
-		public final PDPage page;
-		public final List<TextPosition>textChars;
-		PageChars(PDPage page,List<TextPosition>textChars){
-			this.page=page;
-			this.textChars=textChars;
-		}
-	}
-	public final PDDocument doc;
-	public final List<PDPage>pages;
-	private final PDFTextStripper stripper;
-	private final List<TextPosition>stripChars=new ArrayList();
-	protected DocTexts(COSDocument cosDoc){
-		if(cosDoc==null)
-			throw new IllegalArgumentException("Null cos in "+Debug.info(this));
-		doc=new PDDocument(cosDoc);
-		try{
-			stripper=new PDFTextStripper(){
-				private final boolean test=false;
-				private int testCharAt=-1;
-				public boolean getSortByPosition(){
-					return!test;
-				}
-				@Override
-				public void processEncodedText(byte[]string)throws IOException{
-					if(true||test)trace(".processEncodedText: text=",new String(string));
-					super.processEncodedText(string);
-				}
-				@Override
-				protected void processTextPosition(TextPosition text){
-					if(test){
-						trace(".processTextPosition: text=",text.getCharacter());
-						testCharAt++;
-						stripChars.add(text);
-					}
-					super.processTextPosition(text);
-				}
-				protected void writePage()throws IOException{
-					if(!test)stripChars.clear();
-					else trace(".writePage: charsRaw=",stripChars.size());
-					super.writePage();
-					if(!test)stripChars.addAll(charactersByArticle.get(0));
-					else trace(".writePage: charsRaw="+stripChars.size()+" charAt="+testCharAt);
-				}
-			};
-		}catch(IOException e){
-			throw new RuntimeException(e);
-		}
-		pages=new PDDocument(cosDoc).getDocumentCatalog().getAllPages();
-	}
-	public String newExtracted(int pageAt){
-		try{
-			stripper.setStartPage(pageAt+1);
-			stripper.setEndPage(pageAt+1);
+	final public String getPageText(int pageAt, boolean extracted){
+		if(extracted) try{
+			setStripperPage(pageAt);
 			return stripper.getText(doc);
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
-	}
-	public String getStreamText(int pageAt){
-		try{
+		else try{
 			return pages.get(pageAt).getContents().getInputStreamAsString();
 		}catch(IOException e){
 			return e.getMessage();
 		}
+	}
+	private void setStripperPage(int pageAt) {
+		stripper.setStartPage(pageAt +1);
+		stripper.setEndPage(pageAt +1);
 	}
 }
 

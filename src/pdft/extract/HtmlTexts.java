@@ -16,7 +16,6 @@ final class HtmlTexts extends DocTexts {
 			return this==Extracted?"E&xtracted":"Stream";
 		}
 	}
-	private final PagePainters emptyPainters=new PagePainters(this,0,null);
 	private final FacetAppSurface app;
 	HtmlTexts(COSDocument cosDoc, FacetAppSurface app){
 		super(cosDoc);
@@ -52,8 +51,9 @@ final class HtmlTexts extends DocTexts {
 					}
 					@Override
 					public String newPageContent(){
-						return"<p>"+(extracted?newExtracted(pageAt).replace("\n","\n<p>")
-								:replaceAll(getStreamText(pageAt),new String[]{
+						return"<p>"+(extracted? getPageText(pageAt, true)
+									.replace("\n","\n<p>")
+								:replaceAll(getPageText(pageAt,false),new String[]{
 							"\n","\n<p>",
 							"\\(([^\\)]+)\\)","(<i>$1</i>)"
 						}));
