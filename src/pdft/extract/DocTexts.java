@@ -65,27 +65,6 @@ class DocTexts extends Tracer{
 			this.page=page;
 			this.textChars=textChars;
 		}
-		void markPage(String toMark,String text){
-			for(int textAts=0;textAts<text.length();){
-				int markStart=text.indexOf(toMark,textAts);
-				if(markStart<0)break;
-				TextPosition charStart=this.textChars.get(markStart);
-				trace(".markPage: markStart=",traceTextChar(charStart));
-				PDAnnotationTextMarkup hilite=new PDAnnotationTextMarkup(
-						PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
-				float x=charStart.getX(),y=charStart.getY();
-				hilite.setQuadPoints(new float[]{x,y,x+charStart.getWidth(),
-						y+charStart.getHeight()});
-				try{
-					page.getAnnotations().add(hilite);
-				}catch(IOException e){
-					throw new RuntimeException(e);
-				}
-			}
-		}
-		protected final Object traceTextChar(TextPosition tc){
-			return tc.getCharacter()+" y="+sf(tc.getY())+" x="+sf(tc.getX());
-		}
 	}
 	public final PDDocument doc;
 	public final List<PDPage>pages;
@@ -104,7 +83,7 @@ class DocTexts extends Tracer{
 				}
 				@Override
 				public void processEncodedText(byte[]string)throws IOException{
-					if(test)trace(".processEncodedText: text=",new String(string));
+					if(true||test)trace(".processEncodedText: text=",new String(string));
 					super.processEncodedText(string);
 				}
 				@Override

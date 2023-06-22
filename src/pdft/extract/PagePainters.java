@@ -32,9 +32,9 @@ final class PagePainters extends Tracer implements SizeEstimable{
 	private final int pageAt;
 	private final int rotation;
 	private final Dimension pageSize;
-	PagePainters(DocTexts texts, int pageAt, FacetAppSurface app){
+	PagePainters(DocTexts doc, int pageAt, FacetAppSurface app){
 		this.app=app;
-		PageChars chars=texts.getChars(this.pageAt=pageAt);
+		PageChars chars=doc.getChars(this.pageAt=pageAt);
 		page=chars.page;
 		rotation=page.findRotation();
 		pageSize = page.findMediaBox().createDimension();
