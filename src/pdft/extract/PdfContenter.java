@@ -70,11 +70,11 @@ final class PdfContenter extends ViewerContenter{
 				new SFrameTarget[]{pages,
 						/*
 						document,
-						extracted,
 						stream,
 						*/
 						page,
-		});
+						extracted,
+				});
 	}
 	@Override
 	protected void attachContentAreaFacets(AreaRoot area){

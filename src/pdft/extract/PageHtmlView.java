@@ -28,7 +28,7 @@ final class PageHtmlView extends HtmlView.SmartView{
 	final TextStyle style;
 	int lineCount;
 	PageHtmlView(TextStyle style, AppValues values){
-		super(style.title());
+		super(style.name());
 		this.style=style;
 		final ValueNode nature=values.nature();
 		wrap=new SToggling("Wrap &Lines",

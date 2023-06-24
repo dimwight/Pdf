@@ -9,13 +9,11 @@ import facets.util.app.ProvidingCache.ItemProvider;
 import org.apache.pdfbox.cos.COSDocument;
 
 import static facets.util.Regex.replaceAll;
+import static pdft.extract.HtmlTexts.TextStyle.Extracted;
+import static pdft.extract.HtmlTexts.TextStyle.Stream;
 
 final class HtmlTexts extends DocTexts {
-	public enum TextStyle{Extracted,Stream;
-		public String title(){
-			return this==Extracted?"E&xtracted":"Stream";
-		}
-	}
+	public enum TextStyle{Extracted,Stream,Table}
 	private final FacetAppSurface app;
 	HtmlTexts(COSDocument cosDoc, FacetAppSurface app){
 		super(cosDoc);
@@ -26,7 +24,7 @@ final class HtmlTexts extends DocTexts {
 		if(true)super.traceOutput(msg);
 	}
 	String newHtml(final int pageAt,TextStyle style){
-		final boolean extracted=style== TextStyle.Extracted;
+		final boolean extracted=style==Extracted;
 		if(false)Times.printElapsed("Texts..buildPageContent extracted="+extracted);
 		final int basePts=FacetFactory.fontSizes[FacetFactory.fontSizeAt];
 		String html=new ItemProvider<String>(app.ff.providingCache(),doc,
@@ -51,12 +49,10 @@ final class HtmlTexts extends DocTexts {
 					}
 					@Override
 					public String newPageContent(){
-						return"<p>"+(extracted? getPageText(pageAt, true)
+						return"<p>"+(extracted? newPageText(pageAt, Extracted)
 									.replace("\n","\n<p>")
-								:replaceAll(getPageText(pageAt,false),new String[]{
-							"\n","\n<p>",
-							"\\(([^\\)]+)\\)","(<i>$1</i>)"
-						}));
+								:replaceAll(newPageText(pageAt,Stream), "\n","\n<p>",
+								"\\(([^\\)]+)\\)","(<i>$1</i>)"));
 					}
 				}.buildPage();
 			}

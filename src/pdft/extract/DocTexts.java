@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static pdft.extract.HtmlTexts.TextStyle.Extracted;
+
 class DocTexts extends Tracer{
 	final class PageChars extends Tracer{
 		public final PDPage page;
@@ -104,8 +106,8 @@ class DocTexts extends Tracer{
 			throw new RuntimeException(e);
 		}
 	}
-	final public String getPageText(int pageAt, boolean extracted){
-		if(extracted) try{
+	protected String newPageText(int pageAt, HtmlTexts.TextStyle style){
+		if(style== Extracted) try{
 			setStripperPage(pageAt);
 			return stripper.getText(doc);
 		}catch(Exception e){
