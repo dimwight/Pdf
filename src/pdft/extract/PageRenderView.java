@@ -59,7 +59,7 @@ final class PageRenderView extends PlaneViewWorks {
         };
     }
     PageRenderView(Map<PDPage, Coords> pageCoords, PageAvatarPolicies avatars) {
-        super("Re&ndering", 0, 0, new Vector(0, 0), avatars);
+        super("Re&nder", 0, 0, new Vector(0, 0), avatars);
         this.pageCoords = pageCoords;
     }
     void setToPage(PDPage page) {

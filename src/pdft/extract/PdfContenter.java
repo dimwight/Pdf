@@ -59,7 +59,7 @@ final class PdfContenter extends ViewerContenter{
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
-				extracted=new PageHtmlView(TextStyle.Extracted,app.spec).newFramed(),
+				extracted=new PageHtmlView(TextStyle.Extract,app.spec).newFramed(),
 				stream=new PageHtmlView(TextStyle.Stream,app.spec).newFramed();;
 		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));

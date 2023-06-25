@@ -66,7 +66,7 @@ final class PageHtmlView extends HtmlView.SmartView{
   }
   @Override
   public boolean wrapLines(){
-		return style==TextStyle.Extracted||((SToggling)wrap).isSet();
+		return style==TextStyle.Extract ||((SToggling)wrap).isSet();
   }
 	SFrameTarget newFramed(){
 		return new SFrameTarget(this){

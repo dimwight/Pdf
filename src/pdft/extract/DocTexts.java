@@ -1,12 +1,16 @@
 package pdft.extract;
 
 import facets.util.Debug;
+import facets.util.Times;
 import facets.util.Tracer;
+import facets.util.app.ProvidingCache;
+import facets.util.app.ProvidingCache.ItemProvider;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
+import pdft.extract.HtmlTexts.TextStyle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,10 +18,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static pdft.extract.HtmlTexts.TextStyle.Extracted;
+import static pdft.extract.HtmlTexts.TextStyle.Extract;
 
 class DocTexts extends Tracer{
-	final class PageChars extends Tracer{
+	private final ItemProvider<String> text;
+	private final ItemProvider<List<TextPosition>> chars;
+	final static class PageChars extends Tracer{
 		public final PDPage page;
 		public final List<TextPosition>textChars;
 		PageChars(PDPage page,List<TextPosition>textChars){
@@ -29,87 +35,70 @@ class DocTexts extends Tracer{
 	public final List<PDPage>pages;
 	private final PDFTextStripper stripper;
 	private final List<TextPosition>stripChars=new ArrayList();
-	protected DocTexts(COSDocument cosDoc){
-		if(cosDoc==null)
+	protected DocTexts(COSDocument cosDoc, ProvidingCache cache){
+		if((doc=new PDDocument(cosDoc))==null)
 			throw new IllegalArgumentException("Null cos in "+Debug.info(this));
-		doc=new PDDocument(cosDoc);
+		pages=new PDDocument(cosDoc).getDocumentCatalog().getAllPages();
 		try{
 			stripper=new PDFTextStripper(){
-				private final boolean test=false;
-				private int testCharAt=-1;
 				public boolean getSortByPosition(){
-					return!test;
+					return true;
 				}
 				@Override
 				public void processEncodedText(byte[]string)throws IOException{
-					if(false||test)trace(".processEncodedText: ",new String(string));
 					super.processEncodedText(string);
 				}
 				@Override
 				protected void processTextPosition(TextPosition text){
-					if(false||test){
-						trace(".processTextPosition: ",text.getCharacter());
-						testCharAt++;
-						stripChars.add(text);
-					}
 					super.processTextPosition(text);
 				}
 				protected void writePage()throws IOException{
-					if(!test)stripChars.clear();
-					else trace(".writePage: charsRaw=",stripChars.size());
+					stripChars.clear();
 					super.writePage();
-					if(!test)stripChars.addAll(charactersByArticle.get(0));
-					else trace(".writePage: charsRaw="+stripChars.size()+" charAt="+testCharAt);
+					stripChars.addAll(charactersByArticle.get(0));
 				}
 			};
 		}catch(IOException e){
 			throw new RuntimeException(e);
 		}
-		pages=new PDDocument(cosDoc).getDocumentCatalog().getAllPages();
+		text=new ItemProvider<String>(cache,this,"Text") {
+			@Override
+			protected String newItem() {
+				try {
+					return stripper.getText(doc);
+				}catch(Exception e){
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		chars=new ItemProvider<List<TextPosition>>(cache, this, "Chars") {
+			@Override
+			protected List<TextPosition> newItem() {
+				final List<TextPosition> textChars = new ArrayList();
+				Iterator<TextPosition> chars = stripChars.iterator();
+				while (chars.hasNext()) textChars.add(chars.next());
+				return textChars;
+			}
+		};
+		Times.times=true;
 	}
 	final public PageChars getChars(int pageAt){
 		setStripperPage(pageAt);
-		try{
-			String text=stripper.getText(doc);
-			final List<TextPosition>textChars=new ArrayList();
-			Iterator<TextPosition>chars=stripChars.iterator();
-			boolean debug=false;
-			if(debug)trace(": text=\n",text);
-			for(int charAt=0;charAt<text.length();charAt++){
-				String textNext=text.substring(charAt,charAt+1);
-				if(textNext.matches("\\s+")){
-					textChars.add(null);
-					if(debug)trace(": space ");
-					continue;
-				}else{
-					if(!chars.hasNext())break;
-					TextPosition match=chars.next();
-					String matchChar=match.getCharacter();
-					int matchCount=matchChar.length();
-					if(matchChar.matches("\\s+")){
-						charAt--;
-						continue;
-					}
-					else if(matchCount>1){
-						textNext=text.substring(charAt,charAt+matchCount);
-						charAt+=matchCount-1;
-					}
-					String msg="matchChar="+matchChar+" textNext="+textNext;
-					if(!matchChar.equals(textNext))throw new IllegalStateException(
-							"No match "+msg);
-					else if(debug)trace(": matched ",msg);
-					textChars.add(match);
-				}
-			}
-			return new PageChars(pages.get(pageAt),Collections.unmodifiableList(textChars));
-		}catch(Exception e){
-			throw new RuntimeException(e);
-		}
+//		Times.printElapsed("getChars pageAt=" + pageAt);
+		text.getForValues(pageAt);
+		PageChars pageChars = new PageChars(pages.get(pageAt), Collections.unmodifiableList(
+				chars.getForValues(pageAt)
+		));
+//		Times.printElapsed("getChars-");
+		return pageChars;
 	}
-	protected String newPageText(int pageAt, HtmlTexts.TextStyle style){
-		if(style== Extracted) try{
+	protected String getPageText(int pageAt, TextStyle style){
+		if(style== Extract) try{
 			setStripperPage(pageAt);
-			return stripper.getText(doc);
+			Times.printElapsed("getPageText pageAt=" + pageAt);
+			String got = text.getForValues(pageAt);
+			Times.printElapsed("getPageText-");
+			return got;
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
