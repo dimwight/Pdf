@@ -13,6 +13,8 @@ import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
 import pdft.extract.HtmlTexts.TextStyle;
 
+import static pdft.extract.HtmlTexts.TextStyle.Extract;
+import static pdft.extract.HtmlTexts.TextStyle.Stream;
 import static pdft.extract.PdfContenter.ARG_WRAP;
 
 final class PageHtmlView extends HtmlView.SmartView{
@@ -62,17 +64,17 @@ final class PageHtmlView extends HtmlView.SmartView{
 	}
   @Override
   public int quickLineHeight(){
-  	return style== TextStyle.Stream?17:-1;
+  	return style != Stream ? -1 : 17;
   }
   @Override
   public boolean wrapLines(){
-		return style==TextStyle.Extract ||((SToggling)wrap).isSet();
+		return style!= Stream ||((SToggling)wrap).isSet();
   }
 	SFrameTarget newFramed(){
 		return new SFrameTarget(this){
 			@Override
 			protected STarget[]lazyElements(){
-				return style!=TextStyle.Stream?super.lazyElements():new STarget[]{
+				return style!= Stream?super.lazyElements():new STarget[]{
 					codeCount,
 					wrap
 				};

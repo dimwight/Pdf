@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static pdft.extract.HtmlTexts.TextStyle.Extract;
+import static pdft.extract.HtmlTexts.TextStyle.Table;
 
 class DocTexts extends Tracer{
 	private final ItemProvider<String> text;
@@ -32,13 +33,13 @@ class DocTexts extends Tracer{
 		}
 	}
 	public final PDDocument doc;
-	public final List<PDPage>pages;
+	private final List<PDPage>pages;
 	private final PDFTextStripper stripper;
 	private final List<TextPosition>stripChars=new ArrayList();
 	protected DocTexts(COSDocument cosDoc, ProvidingCache cache){
-		if((doc=new PDDocument(cosDoc))==null)
+		if(cosDoc ==null)
 			throw new IllegalArgumentException("Null cos in "+Debug.info(this));
-		pages=new PDDocument(cosDoc).getDocumentCatalog().getAllPages();
+		pages=(doc=new PDDocument(cosDoc)).getDocumentCatalog().getAllPages();
 		try{
 			stripper=new PDFTextStripper(){
 				public boolean getSortByPosition(){
@@ -77,7 +78,7 @@ class DocTexts extends Tracer{
 				final List<TextPosition> textChars = new ArrayList();
 				Iterator<TextPosition> chars = stripChars.iterator();
 				while (chars.hasNext()) textChars.add(chars.next());
-				return textChars;
+				return Collections.unmodifiableList(textChars);
 			}
 		};
 		Times.times=true;
@@ -86,21 +87,27 @@ class DocTexts extends Tracer{
 		setStripperPage(pageAt);
 //		Times.printElapsed("getChars pageAt=" + pageAt);
 		text.getForValues(pageAt);
-		PageChars pageChars = new PageChars(pages.get(pageAt), Collections.unmodifiableList(
+		PageChars pageChars = new PageChars(pages.get(pageAt),
 				chars.getForValues(pageAt)
-		));
+		);
 //		Times.printElapsed("getChars-");
 		return pageChars;
 	}
 	protected String getPageText(int pageAt, TextStyle style){
 		if(style== Extract) try{
 			setStripperPage(pageAt);
-			Times.printElapsed("getPageText pageAt=" + pageAt);
+			Times.printElapsed("getPageText: style=" + style+ " pageAt=" + pageAt);
 			String got = text.getForValues(pageAt);
 			Times.printElapsed("getPageText-");
 			return got;
 		}catch(Exception e){
 			throw new RuntimeException(e);
+		}
+		else if (style==Table) {
+			setStripperPage(pageAt);
+			text.getForValues(pageAt);
+			chars.getForValues(pageAt);
+			return "[table]";
 		}
 		else try{
 			return pages.get(pageAt).getContents().getInputStreamAsString();

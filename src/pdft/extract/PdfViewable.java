@@ -13,7 +13,6 @@ import facets.facet.app.FacetAppSurface;
 import facets.util.NumberPolicy;
 import facets.util.app.ProvidingCache;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -32,9 +31,9 @@ class PdfViewable extends ViewableFrame{
 	private final List<COSDictionary>cosPages;
 	private final int pageCount;
 	private final SNumeric goToPage;
-	final DocTexts texts;
+	final HtmlTexts texts;
 	int viewPageAt=-1;
-	PdfViewable(String title, COSDocument cosDoc, FacetAppSurface app){
+	PdfViewable(String title, PDDocument cosDoc, FacetAppSurface app){
 		super(title,cosDoc);
 		appCache=app.ff.providingCache();
 		texts=new HtmlTexts(cosDoc,app);
@@ -73,7 +72,7 @@ class PdfViewable extends ViewableFrame{
 		return view instanceof AvatarView?
 				((PageRenderView)view).newViewerSelection()
 			:view instanceof PageHtmlView ?
-				((PageHtmlView)view).newViewerSelection((HtmlTexts) texts,pageAt)
+				((PageHtmlView)view).newViewerSelection(texts,pageAt)
 			:view.newViewerSelection(viewer,selection());
 	}
 	@Override

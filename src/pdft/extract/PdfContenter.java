@@ -12,6 +12,7 @@ import facets.facet.app.FacetAppSurface;
 import facets.util.Debug;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import pdft.extract.Coord.Coords;
 
@@ -30,6 +31,7 @@ final class PdfContenter extends ViewerContenter{
 	private static int defaults=1;
 	private final FacetAppSurface app;
 	private PageRenderView renderView;
+	private final Map<PDPage,Coords>pageCoords=new HashMap();
 	PdfContenter(Object source, FacetAppSurface app){
 		super(source);
 		if((this.app=app)==null)throw new IllegalArgumentException(
@@ -41,7 +43,7 @@ final class PdfContenter extends ViewerContenter{
 		if(cosDoc==null)throw new AppSurface.ContentCreationException(
 				"Content creation was interrupted for "+source+".");
 		String title="Coords"+defaults++;
-		return new PdfViewable(title,cosDoc,app){
+		return new PdfViewable(title,new PDDocument(cosDoc),app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){
@@ -54,26 +56,28 @@ final class PdfContenter extends ViewerContenter{
 			}
 		};
 	}
-	private final Map<PDPage,Coords>pageCoords=new HashMap();
 	@Override
 	protected FacetedTarget[]newContentViewers(ViewableFrame viewable){
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
+		AppSpecifier values = app.spec;
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
-				extracted=new PageHtmlView(TextStyle.Extract,app.spec).newFramed(),
-				stream=new PageHtmlView(TextStyle.Stream,app.spec).newFramed();;
+				extract=new PageHtmlView(TextStyle.Extract, values).newFramed(),
+				table=new PageHtmlView(TextStyle.Table, values).newFramed(),
+				stream=new PageHtmlView(TextStyle.Stream, values).newFramed();
 		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
-		SFrameTarget page = new SFrameTarget(renderView);
+		SFrameTarget render = new SFrameTarget(renderView);
 		if (false)
-			((PdfViewable)viewable).setPageViewToRotation(this.renderView =(PageRenderView)page.framed);
+			((PdfViewable)viewable).setPageViewToRotation(this.renderView =(PageRenderView)render.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,
 						/*
 						document,
 						stream,
+						extract,
 						*/
-						page,
-						extracted,
+						render,
+						table,
 				});
 	}
 	@Override
