@@ -11,6 +11,7 @@ import org.apache.pdfbox.util.TextPosition;
 import pdft.extract.Coord.Coords;
 
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.util.*;
 
 import static facets.util.Regex.replaceAll;
@@ -92,6 +93,7 @@ class DocTexts extends Tracer{
 		Times.times=true;
 	}
 	private String getPageText(int pageAt, TextStyle style){
+		PDPage page = (PDPage) doc.getDocumentCatalog().getAllPages().get(pageAt);
 		if(style== Extract) try{
 			setStripperPage(pageAt);
 			Times.printElapsed("getPageText: style=" + style+ " pageAt=" + pageAt);
@@ -104,12 +106,12 @@ class DocTexts extends Tracer{
 		else if (style==Table) {
 			setStripperPage(pageAt);
 			extract.getForValues(pageAt);
-			chars.getForValues(pageAt);
-			return "[table]";
+			Coords coords = pageCoords.get(page);
+			if (coords == null)throw new IllegalStateException("coords == null");
+			else return coords.constructTable(chars.getForValues(pageAt));
 		}
 		else try{
-			return ((List<PDPage>) doc.getDocumentCatalog().getAllPages())
-						.get(pageAt).getContents().getInputStreamAsString();
+			return page.getContents().getInputStreamAsString();
 		}catch(IOException e){
 			return e.getMessage();
 		}

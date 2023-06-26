@@ -3,6 +3,7 @@ package pdft.extract;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
 import facets.util.geom.Line;
+import org.apache.pdfbox.util.TextPosition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ final class Coord implements AvatarContent, Serializable {
         }
         void remove(Coord coord) {
             (coord.forX?forX:forY).remove(coord);
+        }
+        String constructTable(List<TextPosition> chars) {
+            return "[table]";
         }
     }
 }

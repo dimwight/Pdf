@@ -66,8 +66,6 @@ final class PdfContenter extends ViewerContenter{
 		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget render = new SFrameTarget(renderView);
-		if (false)
-			((PdfViewable)viewable).setPageViewToRotation(this.renderView =(PageRenderView)render.framed);
 		return newViewerAreas(viewable,
 				new SFrameTarget[]{pages,
 						/*
@@ -75,9 +73,9 @@ final class PdfContenter extends ViewerContenter{
 						stream,
 						*/
 						render,
-						extract,
+//						extract,
 //						stream,
-//						table,
+						table,
 				});
 	}
 	@Override
