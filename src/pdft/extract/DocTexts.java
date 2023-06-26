@@ -1,30 +1,27 @@
 package pdft.extract;
 
-import facets.util.Debug;
-import facets.util.Times;
-import facets.util.Tracer;
+import facets.facet.FacetFactory;
+import facets.util.*;
 import facets.util.app.ProvidingCache;
 import facets.util.app.ProvidingCache.ItemProvider;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
+import pdft.extract.Coord.Coords;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import static pdft.extract.DocTexts.TextStyle.Extract;
-import static pdft.extract.DocTexts.TextStyle.Table;
+import static facets.util.Regex.replaceAll;
+import static pdft.extract.DocTexts.TextStyle.*;
 
 class DocTexts extends Tracer{
-	private final ItemProvider<String> text;
+	private final ItemProvider<String> extract;
 	private final ItemProvider<List<TextPosition>> chars;
+	private final Map<PDPage, Coords> pageCoords;
 
 	public enum TextStyle{Extract,Stream,Table}
-
 	final static class PageChars extends Tracer{
 		public final PDPage page;
 		public final List<TextPosition>textChars;
@@ -36,9 +33,21 @@ class DocTexts extends Tracer{
 	public final PDDocument doc;
 	private final PDFTextStripper stripper;
 	private final List<TextPosition>stripChars=new ArrayList();
-	protected DocTexts(PDDocument doc, ProvidingCache cache){
+	final public PageChars getChars(int pageAt){
+		setStripperPage(pageAt);
+//		Times.printElapsed("getChars pageAt=" + pageAt);
+		extract.getForValues(pageAt);
+		PageChars pageChars = new PageChars(((List<PDPage>) (this.
+				doc).getDocumentCatalog().getAllPages()).get(pageAt),
+				chars.getForValues(pageAt)
+		);
+//		Times.printElapsed("getChars-");
+		return pageChars;
+	}
+	protected DocTexts(PDDocument doc, Map<PDPage, Coords> pageCoords, ProvidingCache cache){
 		if((this.doc=doc) ==null)
 			throw new IllegalArgumentException("Null doc in "+Debug.info(this));
+		this.pageCoords = pageCoords;
 		try{
 			stripper=new PDFTextStripper(){
 				public boolean getSortByPosition(){
@@ -61,7 +70,7 @@ class DocTexts extends Tracer{
 		}catch(IOException e){
 			throw new RuntimeException(e);
 		}
-		text=new ItemProvider<String>(cache,this,"Text") {
+		extract =new ItemProvider<String>(cache,this,"Text") {
 			@Override
 			protected String newItem() {
 				try {
@@ -82,22 +91,11 @@ class DocTexts extends Tracer{
 		};
 		Times.times=true;
 	}
-	final public PageChars getChars(int pageAt){
-		setStripperPage(pageAt);
-//		Times.printElapsed("getChars pageAt=" + pageAt);
-		text.getForValues(pageAt);
-		PageChars pageChars = new PageChars(((List<PDPage>) (this.
-				doc).getDocumentCatalog().getAllPages()).get(pageAt),
-				chars.getForValues(pageAt)
-		);
-//		Times.printElapsed("getChars-");
-		return pageChars;
-	}
-	protected String getPageText(int pageAt, TextStyle style){
+	private String getPageText(int pageAt, TextStyle style){
 		if(style== Extract) try{
 			setStripperPage(pageAt);
 			Times.printElapsed("getPageText: style=" + style+ " pageAt=" + pageAt);
-			String got = text.getForValues(pageAt);
+			String got = extract.getForValues(pageAt);
 			Times.printElapsed("getPageText-");
 			return got;
 		}catch(Exception e){
@@ -105,7 +103,7 @@ class DocTexts extends Tracer{
 		}
 		else if (style==Table) {
 			setStripperPage(pageAt);
-			text.getForValues(pageAt);
+			extract.getForValues(pageAt);
 			chars.getForValues(pageAt);
 			return "[table]";
 		}
@@ -119,6 +117,33 @@ class DocTexts extends Tracer{
 	private void setStripperPage(int pageAt) {
 		stripper.setStartPage(pageAt +1);
 		stripper.setEndPage(pageAt +1);
+	}
+	String newHtml(final int pageAt, TextStyle style){
+		return new HtmlBuilder() {
+			final int basePts = FacetFactory.fontSizes[FacetFactory.fontSizeAt];
+			final double unitPts = 12;
+			@Override
+			protected String[] buildPageStyles(double points) {
+				return style != Stream ? new String[]{
+						"p{font-family:\"Times New Roman\",serif;font-size:" + usePts(14) + "pt}"
+				}
+						: new String[]{
+						"p{font-family:\"Courier New\",Courier;font-size:" + usePts(12) + "pt;margin-bottom:" +
+								usePts(3) + "pt;}",
+						"i{color:gray}"
+				};
+			}
+			private double usePts(int pt) {
+				return Util.sf(basePts * pt / unitPts);
+			}
+			@Override
+			public String newPageContent() {
+				String raw = getPageText(pageAt, style);
+				return "<p>" + (style != Stream ? raw.replace("\n", "\n<p>")
+						: replaceAll(raw, "\n", "\n<p>",
+						"\\(([^\\)]+)\\)", "(<i>$1</i>)"));
+			}
+		}.buildPage();
 	}
 }
 

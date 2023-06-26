@@ -11,10 +11,9 @@ import facets.util.Debug;
 import facets.util.Times;
 import facets.util.app.AppValues;
 import facets.util.tree.ValueNode;
-import pdft.extract.HtmlTexts.TextStyle;
+import pdft.extract.DocTexts.TextStyle;
 
-import static pdft.extract.HtmlTexts.TextStyle.Extract;
-import static pdft.extract.HtmlTexts.TextStyle.Stream;
+import static pdft.extract.DocTexts.TextStyle.Stream;
 import static pdft.extract.PdfContenter.ARG_WRAP;
 
 final class PageHtmlView extends HtmlView.SmartView{
@@ -47,7 +46,7 @@ final class PageHtmlView extends HtmlView.SmartView{
 		if(false)Times.printElapsed(Debug.info(this)+msg);
 		else if(false)super.traceOutput(msg);
 	}
-	SSelection newViewerSelection(HtmlTexts texts, int pageAt){
+	SSelection newViewerSelection(DocTexts texts, int pageAt){
 		final String raw=texts.newHtml(pageAt,style),lines[]=raw.split("\\s*<p>");
 		lineCount=lines.length;
 		return new SSelection(){

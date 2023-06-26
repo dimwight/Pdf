@@ -42,8 +42,7 @@ final class PdfContenter extends ViewerContenter{
 		if(cosDoc==null)throw new AppSurface.ContentCreationException(
 				"Content creation was interrupted for "+source+".");
 		String title="Coords"+defaults++;
-		PDDocument doc = new PDDocument(cosDoc);
-		return new PdfViewable(title, doc,app){
+		return new PdfViewable(title, new PDDocument(cosDoc),pageCoords, app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){

@@ -11,13 +11,13 @@ import facets.core.superficial.app.SelectionView;
 import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
 import facets.util.NumberPolicy;
-import facets.util.app.ProvidingCache;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static facets.core.app.TextView.PAGE_NEXT;
 import static facets.core.app.TextView.PAGE_PREVIOUS;
@@ -27,24 +27,21 @@ class PdfViewable extends ViewableFrame{
 	static final int COS_PAGE_COUNT=1;
 	static final int COS_FONTS=2;
 	static final int COS_LAST=COS_FONTS;
-	private final ProvidingCache appCache;
 	private final List<COSDictionary>cosPages;
 	private final int pageCount;
 	private final SNumeric goToPage;
-	final HtmlTexts texts;
+	final DocTexts texts;
 	int viewPageAt=-1;
-	PdfViewable(String title, PDDocument doc, FacetAppSurface app){
+	PdfViewable(String title, PDDocument doc, Map<PDPage, Coord.Coords> pageCoords, FacetAppSurface app){
 		super(title,doc);
-		appCache=app.ff.providingCache();
-		texts=new HtmlTexts(doc,app);
+		texts=new DocTexts(doc,pageCoords, app.ff.providingCache());
 		cosPages=new ArrayList();
 		for(Object each:doc.getDocumentCatalog().getAllPages())
 			cosPages.add(((PDPage)each).getCOSDictionary());
 		pageCount=cosPages.size();
-		int pageAt=true||!title.startsWith("Default")?1
-				:Integer.valueOf(title.replaceAll("[^\\d]+",""));
-		defineSelection(cosPages.get(pageAt-1));
-		goToPage=new SNumeric("Page",pageAt,new SNumeric.Coupler(){
+		int pageAt=0;
+		defineSelection(cosPages.get(pageAt));
+		goToPage=new SNumeric("Page",pageAt+1,new SNumeric.Coupler(){
 			@Override
 			public void valueSet(SNumeric n){
 				COSDictionary pageNow=cosPages.get((int)n.value()-1);
