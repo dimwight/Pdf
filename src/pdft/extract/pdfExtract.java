@@ -6,10 +6,8 @@ import facets.core.app.SContenter;
 import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSpecifier;
 import facets.facet.app.FacetAppSurface;
-import pdft.PdfCore;
 
 import java.io.File;
-import java.io.IOException;
 
 import static facets.core.app.AppSurface.ContentStyle.SINGLE;
 
@@ -36,11 +34,7 @@ public final class pdfExtract extends FacetAppSpecifier{
 		return new FacetAppSurface(this,ff){
 			@Override
 			public Object getInternalContentSource(){
-				try{
-					return new PdfCore(new File("PdfApp.pdf")).document.getDocument();
-				}catch(IOException e){
-					throw new RuntimeException(e);
-				}
+				return new File("PdfApp.pdf");
 			}
 			@Override
 			protected SContenter newContenter(final Object source){

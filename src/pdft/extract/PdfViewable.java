@@ -32,7 +32,7 @@ class PdfViewable extends ViewableFrame{
 	private final SNumeric goToPage;
 	final DocTexts texts;
 	int viewPageAt=-1;
-	PdfViewable(String title, PDDocument doc, Map<PDPage, Coord.Coords> pageCoords, FacetAppSurface app){
+	PdfViewable(String title, PDDocument doc, Map<Integer, Coord.Coords> pageCoords, FacetAppSurface app){
 		super(title,doc);
 		texts=new DocTexts(doc,pageCoords, app.ff.providingCache());
 		cosPages=new ArrayList();

@@ -14,8 +14,10 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import pdft.PdfCore;
 import pdft.extract.Coord.Coords;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,22 +29,45 @@ import static pdft.extract.PdfViewable.COS_LAST;
 
 final class PdfContenter extends ViewerContenter{
 	public static final String ARG_WRAP="wrapCode";
-	private static int defaults=1;
 	private final FacetAppSurface app;
 	private PageRenderView renderView;
-	private final Map<PDPage,Coords>pageCoords=new HashMap();
+	private final Map<Integer,Coords>pageCoords=new HashMap();
+	private File coordData;
 	PdfContenter(Object source, FacetAppSurface app){
 		super(source);
 		if((this.app=app)==null)throw new IllegalArgumentException(
 				"Null app in "+Debug.info(this));
 	}
 	@Override
+	public void wasRemoved() {
+		try {
+			new ObjectOutputStream(new FileOutputStream(coordData))
+					.writeObject(pageCoords);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	@Override
 	protected ViewableFrame newContentViewable(final Object source){
-		COSDocument cosDoc=(COSDocument)source;
-		if(cosDoc==null)throw new AppSurface.ContentCreationException(
-				"Content creation was interrupted for "+source+".");
-		String title="Coords"+defaults++;
-		return new PdfViewable(title, new PDDocument(cosDoc),pageCoords, app){
+		File file= (File) source;
+		PDDocument doc;
+		try{
+			doc = new PdfCore(file).document;
+		}catch(IOException e){
+			throw new RuntimeException(e);
+		}
+		String title=file.getName().replace(".pdf","");
+		coordData = new File( title + ".dat");
+		if (coordData.exists())	try {
+			Object read=new ObjectInputStream(new FileInputStream(coordData))
+					.readObject();
+			pageCoords.putAll((Map<Integer,Coords>) read);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return new PdfViewable(title, doc,pageCoords, app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){

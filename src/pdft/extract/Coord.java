@@ -47,13 +47,11 @@ final class Coord implements AvatarContent, Serializable {
     final static class Coords implements Serializable {
         private final List<Coord> forX=new ArrayList();
         private final List<Coord> forY=new ArrayList();
-        private final PlaneView view;
         Coords(PlaneView view){
-            this.view = view;
-            add(true);
-            add(false);
+            add(true,view);
+            add(false, view);
         }
-        void add(boolean forX) {
+        void add(boolean forX, PlaneView view) {
             double at = forX? view.showWidth()/10 : view.showHeight()/10;
             (forX?this.forX:forY).add(new Coord(forX, at));
         }

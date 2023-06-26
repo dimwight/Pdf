@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 final class PageRenderView extends PlaneViewWorks {
-    private final Map<PDPage, Coords> pageCoords;
+    private final Map<Integer, Coords> pageCoords;
     Coords coords;
     private List<AvatarContent> test = Arrays.asList(
             new AvatarContent[]{
@@ -32,7 +32,7 @@ final class PageRenderView extends PlaneViewWorks {
         }
         else if(selectionNow!=null&&
                 !selectionNow.isLive()){
-            coords.add(selectionNow.forX);
+            coords.add(selectionNow.forX, this);
         }
         selectionNow = definition;
     }
@@ -58,7 +58,7 @@ final class PageRenderView extends PlaneViewWorks {
             }
         };
     }
-    PageRenderView(Map<PDPage, Coords> pageCoords, PageAvatarPolicies avatars) {
+    PageRenderView(Map<Integer, Coords> pageCoords, PageAvatarPolicies avatars) {
         super("Re&nder", 0, 0, new Vector(0, 0), avatars);
         this.pageCoords = pageCoords;
     }
@@ -68,8 +68,9 @@ final class PageRenderView extends PlaneViewWorks {
         double across = rotated ? size.height : size.width, down = rotated ? size.width
                 : size.height;
         setShowValues(across, down, new Vector(0,0), 1);
-        coords = pageCoords.get(page);
-        if(coords==null)pageCoords.put(page,coords=new Coords(this));
+        int at = page.getParent().getKids().indexOf(page);
+        coords = pageCoords.get(at);
+        if(coords==null)pageCoords.put(at,coords=new Coords(this));
     }
     @Override
     public int pickHitPixels() {

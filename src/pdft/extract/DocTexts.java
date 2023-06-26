@@ -20,7 +20,7 @@ import static pdft.extract.DocTexts.TextStyle.*;
 class DocTexts extends Tracer{
 	private final ItemProvider<String> extract;
 	private final ItemProvider<List<TextPosition>> chars;
-	private final Map<PDPage, Coords> pageCoords;
+	private final Map<Integer, Coords> pageCoords;
 
 	public enum TextStyle{Extract,Stream,Table}
 	final static class PageChars extends Tracer{
@@ -45,7 +45,7 @@ class DocTexts extends Tracer{
 //		Times.printElapsed("getChars-");
 		return pageChars;
 	}
-	protected DocTexts(PDDocument doc, Map<PDPage, Coords> pageCoords, ProvidingCache cache){
+	protected DocTexts(PDDocument doc, Map<Integer, Coords> pageCoords, ProvidingCache cache){
 		if((this.doc=doc) ==null)
 			throw new IllegalArgumentException("Null doc in "+Debug.info(this));
 		this.pageCoords = pageCoords;
@@ -106,7 +106,7 @@ class DocTexts extends Tracer{
 		else if (style==Table) {
 			setStripperPage(pageAt);
 			extract.getForValues(pageAt);
-			Coords coords = pageCoords.get(page);
+			Coords coords = pageCoords.get(pageAt);
 			if (coords == null)throw new IllegalStateException("coords == null");
 			else return coords.constructTable(chars.getForValues(pageAt));
 		}
