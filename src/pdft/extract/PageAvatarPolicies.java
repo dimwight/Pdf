@@ -35,11 +35,10 @@ final class PageAvatarPolicies extends AvatarPolicies{
         PdfViewable viewable = (PdfViewable) app.findActiveContent().contentFrame();
         DocTexts texts=viewable.texts;
         int pageAt= viewable.viewPageAt;
-        int viewsAt=2;
         return graphics -> {
             p.bar(0, 0, view.showWidth(), view.showHeight(), Shades.white, false)
                     .paintInGraphics(graphics);
-            new PagePainters(texts, pageAt, app).newPainter(viewsAt, true)
+            new PagePainters(texts, pageAt, app).newPainter(2, true)
                     .paintInGraphics(graphics);
         };
     }

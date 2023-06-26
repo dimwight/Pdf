@@ -5,12 +5,10 @@ import facets.util.Times;
 import facets.util.Tracer;
 import facets.util.app.ProvidingCache;
 import facets.util.app.ProvidingCache.ItemProvider;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
-import pdft.extract.HtmlTexts.TextStyle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,12 +16,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static pdft.extract.HtmlTexts.TextStyle.Extract;
-import static pdft.extract.HtmlTexts.TextStyle.Table;
+import static pdft.extract.DocTexts.TextStyle.Extract;
+import static pdft.extract.DocTexts.TextStyle.Table;
 
 class DocTexts extends Tracer{
 	private final ItemProvider<String> text;
 	private final ItemProvider<List<TextPosition>> chars;
+
+	public enum TextStyle{Extract,Stream,Table}
+
 	final static class PageChars extends Tracer{
 		public final PDPage page;
 		public final List<TextPosition>textChars;
@@ -33,13 +34,11 @@ class DocTexts extends Tracer{
 		}
 	}
 	public final PDDocument doc;
-	private final List<PDPage>pages;
 	private final PDFTextStripper stripper;
 	private final List<TextPosition>stripChars=new ArrayList();
-	protected DocTexts(COSDocument cosDoc, ProvidingCache cache){
-		if(cosDoc ==null)
-			throw new IllegalArgumentException("Null cos in "+Debug.info(this));
-		pages=(doc=new PDDocument(cosDoc)).getDocumentCatalog().getAllPages();
+	protected DocTexts(PDDocument doc, ProvidingCache cache){
+		if((this.doc=doc) ==null)
+			throw new IllegalArgumentException("Null doc in "+Debug.info(this));
 		try{
 			stripper=new PDFTextStripper(){
 				public boolean getSortByPosition(){
@@ -66,7 +65,7 @@ class DocTexts extends Tracer{
 			@Override
 			protected String newItem() {
 				try {
-					return stripper.getText(doc);
+					return stripper.getText(DocTexts.this.doc);
 				}catch(Exception e){
 					throw new RuntimeException(e);
 				}
@@ -87,7 +86,8 @@ class DocTexts extends Tracer{
 		setStripperPage(pageAt);
 //		Times.printElapsed("getChars pageAt=" + pageAt);
 		text.getForValues(pageAt);
-		PageChars pageChars = new PageChars(pages.get(pageAt),
+		PageChars pageChars = new PageChars(((List<PDPage>) (this.
+				doc).getDocumentCatalog().getAllPages()).get(pageAt),
 				chars.getForValues(pageAt)
 		);
 //		Times.printElapsed("getChars-");
@@ -110,7 +110,8 @@ class DocTexts extends Tracer{
 			return "[table]";
 		}
 		else try{
-			return pages.get(pageAt).getContents().getInputStreamAsString();
+			return ((List<PDPage>) doc.getDocumentCatalog().getAllPages())
+						.get(pageAt).getContents().getInputStreamAsString();
 		}catch(IOException e){
 			return e.getMessage();
 		}

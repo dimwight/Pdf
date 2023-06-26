@@ -33,12 +33,12 @@ class PdfViewable extends ViewableFrame{
 	private final SNumeric goToPage;
 	final HtmlTexts texts;
 	int viewPageAt=-1;
-	PdfViewable(String title, PDDocument cosDoc, FacetAppSurface app){
-		super(title,cosDoc);
+	PdfViewable(String title, PDDocument doc, FacetAppSurface app){
+		super(title,doc);
 		appCache=app.ff.providingCache();
-		texts=new HtmlTexts(cosDoc,app);
+		texts=new HtmlTexts(doc,app);
 		cosPages=new ArrayList();
-		for(Object each:new PDDocument(cosDoc).getDocumentCatalog().getAllPages())
+		for(Object each:doc.getDocumentCatalog().getAllPages())
 			cosPages.add(((PDPage)each).getCOSDictionary());
 		pageCount=cosPages.size();
 		int pageAt=true||!title.startsWith("Default")?1

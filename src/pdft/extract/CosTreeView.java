@@ -91,15 +91,16 @@ final class CosTreeView extends SelectionView{
 		return newSelection(style,viewable);
 	}
 	private static SSelection newSelection(final TreeStyle style,final SSelection viewable){
-		final COSDocument document=(COSDocument)viewable.content();
+		final PDDocument doc= (PDDocument) viewable.content();
 		final COSArray array=new COSArray();
-		for(Object each:new PDDocument(document).getDocumentCatalog().getAllPages())
+		for(Object each:doc.getDocumentCatalog().getAllPages())
 			array.add(((PDPage)each).getCOSObject());
 		return new SSelection(){
 			@Override
 			public Object content(){
+				COSDocument cos = doc.getDocument();
 				if(style!= TreeStyle.Pages)
-					return style== TreeStyle.Document?document:document.getTrailer();
+					return style== TreeStyle.Document?cos:cos.getTrailer();
 				return array;
 			}
 			@Override

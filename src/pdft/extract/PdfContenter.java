@@ -22,7 +22,6 @@ import java.util.Map;
 import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
-import static pdft.extract.HtmlTexts.*;
 import static pdft.extract.PdfViewable.COS_FONTS;
 import static pdft.extract.PdfViewable.COS_LAST;
 
@@ -43,7 +42,8 @@ final class PdfContenter extends ViewerContenter{
 		if(cosDoc==null)throw new AppSurface.ContentCreationException(
 				"Content creation was interrupted for "+source+".");
 		String title="Coords"+defaults++;
-		return new PdfViewable(title,new PDDocument(cosDoc),app){
+		PDDocument doc = new PDDocument(cosDoc);
+		return new PdfViewable(title, doc,app){
 			@Override
 			public SSelection defineSelection(Object definition){
 				if(definition instanceof Coord){
@@ -61,9 +61,9 @@ final class PdfContenter extends ViewerContenter{
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		AppSpecifier values = app.spec;
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
-				extract=new PageHtmlView(TextStyle.Extract, values).newFramed(),
-				table=new PageHtmlView(TextStyle.Table, values).newFramed(),
-				stream=new PageHtmlView(TextStyle.Stream, values).newFramed();
+				extract=new PageHtmlView(DocTexts.TextStyle.Extract, values).newFramed(),
+				table=new PageHtmlView(DocTexts.TextStyle.Table, values).newFramed(),
+				stream=new PageHtmlView(DocTexts.TextStyle.Stream, values).newFramed();
 		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget render = new SFrameTarget(renderView);
@@ -74,10 +74,11 @@ final class PdfContenter extends ViewerContenter{
 						/*
 						document,
 						stream,
-						extract,
 						*/
 						render,
-						table,
+						extract,
+//						stream,
+//						table,
 				});
 	}
 	@Override
@@ -88,7 +89,7 @@ final class PdfContenter extends ViewerContenter{
 				final boolean forPage = view instanceof PageRenderView,
 						forTree = view instanceof CosTreeView,
 						forStream = view instanceof PageHtmlView
-								&& ((PageHtmlView) view).style == TextStyle.Stream;
+								&& ((PageHtmlView) view).style == DocTexts.TextStyle.Stream;
 				return new ViewerAreaMaster() {
 					@Override
 					public Viewer viewerMaster() {

@@ -4,15 +4,14 @@ import facets.facet.FacetFactory;
 import facets.facet.app.FacetAppSurface;
 import facets.util.HtmlBuilder;
 import facets.util.Util;
-import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import static facets.util.Regex.replaceAll;
-import static pdft.extract.HtmlTexts.TextStyle.Stream;
+import static pdft.extract.DocTexts.TextStyle.Stream;
 
 final class HtmlTexts extends DocTexts {
-	public enum TextStyle{Extract,Stream,Table}
-	HtmlTexts(COSDocument cosDoc, FacetAppSurface app){
-		super(cosDoc,app.ff.providingCache());
+	HtmlTexts(PDDocument doc, FacetAppSurface app){
+		super(doc,app.ff.providingCache());
 	}
 	@Override
 	protected void traceOutput(String msg){
