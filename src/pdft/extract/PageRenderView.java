@@ -6,44 +6,32 @@ import facets.core.superficial.app.SSelection;
 import facets.util.geom.Vector;
 import facets.util.shade.Shades;
 import org.apache.pdfbox.pdmodel.PDPage;
-import pdft.extract.Coord.Coords;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 final class PageRenderView extends PlaneViewWorks {
     private final Map<Integer, Coords> pageCoords;
     Coords coords;
-    private List<AvatarContent> test = Arrays.asList(
-            new AvatarContent[]{
-                    new Coord(true, 10f),
-                    new Coord(false, 10f),
-                    new Coord(true, 200f),
-                    new Coord(false, 100f),
-            });
-    private static final boolean TEST =false;
-    Coord selectionNow;
-    void defineSelection(Coord definition) {
-        if(definition.isJunk()) {
-            coords.remove(selectionNow);
-            definition=null;
+    Coord selection;
+    void defineSelection(Coord selectionNow) {
+        if(selectionNow.isJunk()) {
+            coords.remove(selection);
+            selectionNow=null;
         }
         else if(selectionNow!=null&&
-                !selectionNow.isLive()){
-            coords.add(selectionNow.forX, this);
+                !selection.isLive()){
+            coords.add(selection.forX, this);
         }
-        selectionNow = definition;
+        selection = selectionNow;
+        coords.sortAll();
     }
    public SSelection newViewerSelection() {
         return new SSelection() {
             @Override
             public Object content() {
-                return (TEST ? test :coords.getAll())
-                        .toArray(new AvatarContent[0]);
+                return coords.getAll().toArray(new AvatarContent[0]);
             }
-
             @Override
             public Object single() {
                 return true?null: multiple()[0];
@@ -52,8 +40,8 @@ final class PageRenderView extends PlaneViewWorks {
             @Override
             public Object[] multiple() {
                 return new Object[]{
-                        selectionNow == null ? coords.getAll().get(0)
-                                : selectionNow
+                        selection != null ? selection
+                                :(selection= coords.getAll().get(0))
                 };
             }
         };

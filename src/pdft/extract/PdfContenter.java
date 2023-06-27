@@ -11,11 +11,9 @@ import facets.facet.ViewerAreaMaster;
 import facets.facet.app.FacetAppSurface;
 import facets.util.Debug;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import pdft.PdfCore;
-import pdft.extract.Coord.Coords;
 
 import java.io.*;
 import java.util.HashMap;

@@ -2,6 +2,8 @@ package pdft.extract;
 
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
+import facets.util.StatefulCore;
+import facets.util.Util;
 import facets.util.geom.Line;
 import org.apache.pdfbox.util.TextPosition;
 
@@ -10,13 +12,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class Coord implements AvatarContent, Serializable {
+final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
     final boolean forX;
     private double at;
     private final double atFirst;
     private static int ids;
     final int id=ids++;
-   Coord(boolean forX, double at) {
+    @Override
+    public String toString() {
+        return ""+Util.sf(at);
+    }
+    Coord(boolean forX, double at) {
         this.forX = forX;
         this.setAt(at);
         atFirst=at;
@@ -42,29 +48,10 @@ final class Coord implements AvatarContent, Serializable {
        return at<atFirst;
     }
     void setJunk() {
-        at=atFirst -1;
+        at=atFirst*-1;
     }
-    final static class Coords implements Serializable {
-        private final List<Coord> forX=new ArrayList();
-        private final List<Coord> forY=new ArrayList();
-        Coords(PlaneView view){
-            add(true,view);
-            add(false, view);
-        }
-        void add(boolean forX, PlaneView view) {
-            double at = forX? view.showWidth()/10 : view.showHeight()/10;
-            (forX?this.forX:forY).add(new Coord(forX, at));
-        }
-        List<Coord> getAll() {
-            ArrayList<Coord> all = new ArrayList(forX);
-            all.addAll(forY);
-            return Collections.unmodifiableList(all);
-        }
-        void remove(Coord coord) {
-            (coord.forX?forX:forY).remove(coord);
-        }
-        String constructTable(List<TextPosition> chars) {
-            return "[table]";
-        }
+    @Override
+    public int compareTo(Coord o) {
+        return o.at<=at?1:-1;
     }
 }
