@@ -1,5 +1,6 @@
 package pdft.extract;
 
+import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
 import facets.util.StatefulCore;
 import facets.util.geom.Line;
@@ -10,13 +11,15 @@ import java.util.*;
 final class Coords extends StatefulCore {
     private final List<Coord> forX = new ArrayList();
     private final List<Coord> forY = new ArrayList();
+    private transient StringBuilder sb;
     Coords(PlaneView view) {
         super("Coords-" + view.title());
         add(true, view);
         add(false, view);
     }
     void add(boolean forX, PlaneView view) {
-        double at = forX ? view.showWidth() / 10 : view.showHeight() / 10;
+        int divisor = 25;
+        double at = forX ? view.showWidth() / divisor : view.showHeight() / divisor;
         (forX ? this.forX : this.forY).add(0, new Coord(forX, at));
         updateStateStamp();
         traceForX("add");
@@ -32,35 +35,70 @@ final class Coords extends StatefulCore {
         updateStateStamp();
     }
     private void traceForX(String from) {
+        if (false)
         trace("."+ from + ": forX=", forX.toArray(new Coord[0]));
     }
-    Coord[] getAll() {
+    AvatarContent[] getAll() {
         while (forX.size()>3&&!forX.get(3).isLive())forX.remove(3);
         while (forY.size()>3&&!forY.get(3).isLive())forY.remove(3);
-        ArrayList<Coord> all = new ArrayList(forX);
+        ArrayList<AvatarContent> all = new ArrayList(forX);
         all.addAll(forY);
-        return all.toArray(new Coord[0]);
+        all.addAll(newBoundsCells(null));
+        return all.toArray(new AvatarContent[0]);
     }
-    String constructTable(List<TextPosition> chars) {
+    private Collection<AvatarContent> newBoundsCells(List<TextPosition> chars) {
         sortAll();
         List<Coord> useX = jumpZeroes(forX);
         List<Coord> useY = jumpZeroes(forY);
-        if (useX.size()<2||useY.size()<2)return "[no coords]";
-        if (false) return "[table]";
-        ListIterator<Coord> forX_ = useX.listIterator();
+        List<AvatarContent> lines = new ArrayList();
+        if (useX.size()<2||useY.size()<2) {
+            lines.add(new BoundsCell(new double[]{0,0,200,200}));
+            return lines;
+        }
         ListIterator<Coord> forY_ = useY.listIterator();
-        do{
-            Coord left = forX_.next();
-            Coord right = forX_.next();
-            do {
-                Coord top = forY_.next();
-                Coord  bottom  = forY_.next();
-                Line values = new Line(new double[]{left.getAt(), right.getAt(),
-                        top.getAt(), bottom.getAt()});
-            } while (forY_.hasNext());
-        }while (forX_.hasNext());
-
-        return "[table]";
+        sb = new StringBuilder("<html><head></head><body><table>");
+        while (forY_.hasNext()) {
+            sb.append("<tr>");
+            Coord top = forY_.next();
+            Coord bottom = forY_.next();
+            if (forY_.hasNext()) forY_.previous();
+            ListIterator<Coord> forX_ = useX.listIterator();
+            while (forX_.hasNext()) {
+                sb.append("<td>");
+                Coord left = forX_.next();
+                Coord right = forX_.next();
+                if (forX_.hasNext())forX_.previous();
+                lines.add(new BoundsCell(left.getAt(),top.getAt(),right.getAt(),bottom.getAt(),chars));
+                sb.append(left+"" +top+ "<br>" +right+ "" +bottom+ "</td>");
+            }
+            sb.append("</tr>");
+        }
+        sb.append("</table></body></html>");
+        return lines;
+    }
+    static class BoundsCell implements AvatarContent {
+        final Line bounds;
+        BoundsCell(double[] vals) {
+            bounds = new Line(vals);
+        }
+        BoundsCell(double left, double top, double right, double bottom, List<TextPosition> chars) {
+            this(new double[]{left, top, right, bottom});
+            if (chars==null)return;
+            ListIterator<TextPosition> i = chars.listIterator();
+            while (i.hasNext()) {
+                TextPosition next = i.next();
+                float x = next.getX();
+                float y = next.getY();
+                if (x >bounds.from.x()&&x<bounds.to.x()
+                    &&y>bounds.from.y()&&y<bounds.to.y())
+                    i.remove();
+            }
+        }
+    }
+    String constructTable(List<TextPosition> chars) {
+        sb=new StringBuilder("No table");
+        newBoundsCells(chars);
+        return sb.toString();
     }
     private List<Coord> jumpZeroes(List<Coord> zeroed) {
         ArrayList<Coord> jumped = new ArrayList<>();

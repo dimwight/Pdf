@@ -6,6 +6,7 @@ import facets.facet.app.FacetAppSurface;
 import facets.util.geom.Point;
 import facets.util.shade.Shade;
 import facets.util.shade.Shades;
+import pdft.extract.Coords.BoundsCell;
 
 import static facets.util.shade.Shades.*;
 import static pdft.extract.PageAvatarPolicies.ShadeState.*;
@@ -47,25 +48,27 @@ final class PageAvatarPolicies extends AvatarPolicies{
         PlaneView view = (PlaneView) viewer.view();
         double w = view.showWidth() ;
         double h = view.showHeight() ;
-        Coord coord= (Coord) content;
         return new AvatarPolicy() {
             @Override
             public Painter[] newViewPainters(boolean selected, boolean active) {
-                return new Painter[]{
-                        coordLine(coord, view, selected, false, p),
+                return content instanceof BoundsCell ?new Painter[]{
+                        p.line(((BoundsCell)content).bounds, blue,0, false),
+                }
+                : new Painter[]{
+                        coordLine((Coord) content, view, selected, false, p),
                 };
             }
             @Override
             public Painter[] newPickPainters(Object hit, boolean selected) {
                 return new Painter[]{
-                        coordLine(coord, view, selected, true, p)
+                        coordLine((Coord) content, view, selected, true, p)
                 };
             }
         };
     }
     static Painter coordLine(Coord c, PlaneView view, boolean selected, boolean picked, PainterSource p) {
         ShadeState state = chooseViewState(selected, picked);
-        return p.line(c.newViewLine(view),state.shade,0, !picked);
+        return p.line(c.newViewLine(view),c.isLive()? state.shade:blue,0, !picked);
     }
     @Override
     public DragPolicy dragPolicy(AvatarView view, AvatarContent[] content, Object hit, PainterSource p) {

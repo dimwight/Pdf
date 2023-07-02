@@ -85,7 +85,7 @@ class DocTexts extends Tracer{
 				final List<TextPosition> textChars = new ArrayList();
 				Iterator<TextPosition> chars = stripChars.iterator();
 				while (chars.hasNext()) textChars.add(chars.next());
-				return Collections.unmodifiableList(textChars);
+				return textChars;
 			}
 		};
 		Times.times=true;

@@ -40,7 +40,7 @@ final class PageRenderView extends PlaneViewWorks {
             public Object[] multiple() {
                 return new Object[]{
                         selection != null ? selection
-                                :(selection= coords.getAll()[0])
+                                :(selection= (Coord) coords.getAll()[0])
                 };
             }
         };

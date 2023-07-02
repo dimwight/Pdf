@@ -15,7 +15,7 @@ final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
     final int id=ids++;
     @Override
     public String toString() {
-        return ""+Util.sf(at-atFirst);
+        return (""+ Util.sf(at-atFirst)).replaceAll("\\..*$"," ");
     }
     Coord(boolean forX, double at) {
         this.forX = forX;
