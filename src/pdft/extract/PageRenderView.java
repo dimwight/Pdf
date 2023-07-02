@@ -1,6 +1,5 @@
 package pdft.extract;
 
-import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneViewWorks;
 import facets.core.superficial.app.SSelection;
 import facets.util.geom.Vector;
@@ -30,7 +29,7 @@ final class PageRenderView extends PlaneViewWorks {
         return new SSelection() {
             @Override
             public Object content() {
-                return coords.getAll().toArray(new AvatarContent[0]);
+                return coords.getAll();
             }
             @Override
             public Object single() {
@@ -41,7 +40,7 @@ final class PageRenderView extends PlaneViewWorks {
             public Object[] multiple() {
                 return new Object[]{
                         selection != null ? selection
-                                :(selection= coords.getAll().get(0))
+                                :(selection= coords.getAll()[0])
                 };
             }
         };

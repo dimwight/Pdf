@@ -2,15 +2,10 @@ package pdft.extract;
 
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
-import facets.util.StatefulCore;
 import facets.util.Util;
 import facets.util.geom.Line;
-import org.apache.pdfbox.util.TextPosition;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
     final boolean forX;
@@ -20,7 +15,7 @@ final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
     final int id=ids++;
     @Override
     public String toString() {
-        return ""+Util.sf(at);
+        return ""+Util.sf(at-atFirst);
     }
     Coord(boolean forX, double at) {
         this.forX = forX;
