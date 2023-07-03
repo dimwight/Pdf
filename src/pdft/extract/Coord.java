@@ -8,19 +8,29 @@ import facets.util.geom.Line;
 import java.io.Serializable;
 
 final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
+    static final int DIVISOR = 25;
     final boolean forX;
+    private final double pageSize;
     private double at;
-    private final double atFirst;
     private static int ids;
     final int id=ids++;
     @Override
     public String toString() {
-        return (""+ Util.sf(at-atFirst)).replaceAll("\\..*$"," ");
+        return (""+ Util.sf(at- margin())).replaceAll("\\..*$"," ");
     }
-    Coord(boolean forX, double at) {
+    private double margin() {
+        return pageSize/DIVISOR;
+    }
+    private Coord(boolean forX, double pageSize, double at) {
         this.forX = forX;
-        this.setAt(at);
-        atFirst=at;
+        this.pageSize = pageSize;
+        this.at = at;
+    }
+    Coord(boolean forX, double pageSize) {
+        this(forX,pageSize,pageSize / DIVISOR);
+    }
+    Coord shifted(double shift) {
+        return new Coord(forX,pageSize,at+shift);
     }
     Line newViewLine(PlaneView view) {
         return new Line(new double[]{
@@ -37,13 +47,10 @@ final class Coord implements AvatarContent, Serializable ,Comparable<Coord>{
         this.at = at;
     }
     boolean isLive() {
-        return at>atFirst;
+        return at> margin();
     }
     boolean isJunk() {
-       return at<atFirst;
-    }
-    void setJunk() {
-        at=atFirst*-1;
+       return at< margin();
     }
     @Override
     public int compareTo(Coord o) {

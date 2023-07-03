@@ -16,6 +16,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import pdft.PdfCore;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,10 @@ final class PdfContenter extends ViewerContenter{
 	}
 	@Override
 	public void wasRemoved() {
+		ArrayList<Integer> empties = new ArrayList<>();
 		for (Integer c:pageCoords.keySet())
-			if(pageCoords.get(c).isEmpty())pageCoords.remove(c);
+			if(pageCoords.get(c).isEmpty())empties.add(c);
+		for (Integer c:empties) pageCoords.remove(c);
 		try {
 			new ObjectOutputStream(new FileOutputStream(coordData))
 					.writeObject(pageCoords);

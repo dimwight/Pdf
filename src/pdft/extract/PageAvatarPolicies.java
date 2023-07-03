@@ -67,8 +67,9 @@ final class PageAvatarPolicies extends AvatarPolicies{
     }
     static Painter coordLine(Coord c, PlaneView view, boolean selected, boolean picked, PainterSource p) {
         ShadeState state = chooseViewState(selected, picked);
-        return p.line(c.newViewLine(view),c.isLive()? state.shade:blue,0, !picked);
+        return p.line(c.newViewLine(view),c.isLive()||selected? state.shade:blue,0, !picked);
     }
+
     @Override
     public DragPolicy dragPolicy(AvatarView view, AvatarContent[] content, Object hit, PainterSource p) {
         PageRenderView page = (PageRenderView) view;
@@ -88,8 +89,8 @@ final class PageAvatarPolicies extends AvatarPolicies{
             }
             private Coord newUpdate(Point anchorAt, Point dragAt) {
                 boolean forX = then.forX;
-                return new Coord(forX, then.getAt() +
-                        (forX ? dragAt.x() - anchorAt.x() : dragAt.y() - anchorAt.y()));
+                double shift = forX ? dragAt.x() - anchorAt.x() : dragAt.y() - anchorAt.y();
+                return then.shifted(shift);
             }
         };
     }

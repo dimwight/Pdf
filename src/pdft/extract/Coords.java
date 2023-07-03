@@ -3,8 +3,12 @@ package pdft.extract;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
 import facets.util.StatefulCore;
+import facets.util.TextLines;
+import facets.util.Util;
+import facets.util.app.AppValues;
 import org.apache.pdfbox.util.TextPosition;
 
+import java.io.File;
 import java.util.*;
 
 final class Coords extends StatefulCore {
@@ -17,9 +21,8 @@ final class Coords extends StatefulCore {
         add(false, view);
     }
     void add(boolean forX, PlaneView view) {
-        int divisor = 50;
-        double at = forX ? view.showWidth() / divisor : view.showHeight() / divisor;
-        (forX ? this.forX : this.forY).add(0, new Coord(forX, at));
+        double pageSize = forX ? view.showWidth(): view.showHeight() ;
+        (forX ? this.forX : this.forY).add(0, new Coord(forX, pageSize));
         updateStateStamp();
         traceForX("add");
     }
@@ -42,7 +45,7 @@ final class Coords extends StatefulCore {
         while (forY.size()>3&&!forY.get(3).isLive())forY.remove(3);
         ArrayList<AvatarContent> all = new ArrayList(forX);
         all.addAll(forY);
-        all.addAll(newBoundsCells(null));
+        if (false)all.addAll(newBoundsCells(null));
         return all.toArray(new AvatarContent[0]);
     }
     private Collection<AvatarContent> newBoundsCells(List<TextPosition> chars) {
@@ -81,7 +84,17 @@ final class Coords extends StatefulCore {
     String constructTable(List<TextPosition> chars) {
         sb=new StringBuilder("No table");
         newBoundsCells(chars);
-        return sb.toString();
+        String page = sb.toString();
+        if (false)
+        try{
+            File file=new File(AppValues.userDir(),"export.html");
+            new TextLines(file).writeLines(page.split("\n"));
+            String path=file.getCanonicalPath();
+            Util.windowsOpenUrl("file://" +path);
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+        return page;
     }
     private List<Coord> jumpZeroes(List<Coord> zeroed) {
         ArrayList<Coord> jumped = new ArrayList<>();
