@@ -3,12 +3,9 @@ package pdft.extract;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
 import facets.util.StatefulCore;
-import facets.util.TextLines;
-import facets.util.Util;
-import facets.util.app.AppValues;
+import facets.util.Times;
 import org.apache.pdfbox.util.TextPosition;
 
-import java.io.File;
 import java.util.*;
 
 final class Coords extends StatefulCore {
@@ -54,13 +51,14 @@ final class Coords extends StatefulCore {
         List<Coord> useY = jumpZeroes(forY);
         List<AvatarContent> lines = new ArrayList();
         if (useX.size()<2||useY.size()<2) {
-            lines.add(new BoundsCell(new double[]{0,0,20,20}));
+            lines.add(new BoundsCell(0,0,20,20));
             return lines;
         }
+        ArrayList<TextPosition> chars_ = new ArrayList<>(chars);
         ListIterator<Coord> forY_ = useY.listIterator();
-        sb = new StringBuilder("<html><head></head><body><table>");
+        sb = new StringBuilder("<html><head></head><body><table>\n");
         while (forY_.hasNext()) {
-            sb.append("<tr>");
+            sb.append("<tr>\n");
             Coord top = forY_.next();
             Coord bottom = forY_.next();
             if (forY_.hasNext()) forY_.previous();
@@ -73,28 +71,19 @@ final class Coords extends StatefulCore {
                 BoundsCell cell = new BoundsCell(left.getAt(), top.getAt(),
                         right.getAt(), bottom.getAt());
                 lines.add(cell);
-                sb.append(//left+"" +top+ "<br>" +right+ "" +bottom+ 
-                        cell.getText(chars)+ "</td>");
+                sb.append(cell.getText(chars_)+ "</td>\n");
             }
-            sb.append("</tr>");
+            sb.append("</tr>\n");
         }
         sb.append("</table></body></html>");
         return lines;
     }
     String constructTable(List<TextPosition> chars) {
         sb=new StringBuilder("No table");
+        Times.printElapsed("constructTable");
         newBoundsCells(chars);
-        String page = sb.toString();
-        if (false)
-        try{
-            File file=new File(AppValues.userDir(),"export.html");
-            new TextLines(file).writeLines(page.split("\n"));
-            String path=file.getCanonicalPath();
-            Util.windowsOpenUrl("file://" +path);
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
-        return page;
+        Times.printElapsed("~constructTable");
+        return sb.toString();
     }
     private List<Coord> jumpZeroes(List<Coord> zeroed) {
         ArrayList<Coord> jumped = new ArrayList<>();

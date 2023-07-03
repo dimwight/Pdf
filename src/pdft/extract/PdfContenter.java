@@ -14,6 +14,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import pdft.PdfCore;
+import pdft.extract.DocTexts.TextStyle;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ import java.util.Map;
 import static facets.core.app.ActionViewerTarget.newViewerAreas;
 import static facets.facet.AreaFacets.*;
 import static facets.facet.FacetFactory.*;
+import static pdft.extract.DocTexts.TextStyle.Stream;
+import static pdft.extract.DocTexts.TextStyle.Table;
+import static pdft.extract.PageHtmlView.*;
 import static pdft.extract.PdfViewable.COS_FONTS;
 import static pdft.extract.PdfViewable.COS_LAST;
 
@@ -88,9 +92,9 @@ final class PdfContenter extends ViewerContenter{
 		SFrameTarget pages=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Pages));
 		AppSpecifier values = app.spec;
 		SFrameTarget document=new SFrameTarget(new CosTreeView(CosTreeView.TreeStyle.Document)),
-				extract=new PageHtmlView(DocTexts.TextStyle.Extract, values).newFramed(),
-				table=new PageHtmlView(DocTexts.TextStyle.Table, values).newFramed(),
-				stream=new PageHtmlView(DocTexts.TextStyle.Stream, values).newFramed();
+				extract=new PageHtmlView(TextStyle.Extract, values).newFramed(),
+				table=new PageHtmlView(Table, values).newFramed(),
+				stream=new PageHtmlView(Stream, values).newFramed();
 		(renderView =new PageRenderView(pageCoords, new PageAvatarPolicies(app)))
 			.setToPage(new PDPage((COSDictionary)viewable.selection().single()));
 		SFrameTarget render = new SFrameTarget(renderView);
@@ -114,7 +118,9 @@ final class PdfContenter extends ViewerContenter{
 				final boolean forPage = view instanceof PageRenderView,
 						forTree = view instanceof CosTreeView,
 						forStream = view instanceof PageHtmlView
-								&& ((PageHtmlView) view).style == DocTexts.TextStyle.Stream;
+								&& ((PageHtmlView) view).style == Stream,
+						forTable = view instanceof PageHtmlView
+								&& ((PageHtmlView) view).style == Table;
 				return new ViewerAreaMaster() {
 					@Override
 					public Viewer viewerMaster() {
@@ -128,13 +134,16 @@ final class PdfContenter extends ViewerContenter{
 
 					@Override
 					protected SFacet newViewTools(STargeter targeter) {
-						if (!forStream) return null;
+						if (!forStream&&!forTable) return null;
 						STargeter[] elements = targeter.elements();
-						return app.ff.toolGroups(targeter, HINT_NONE,
-								app.ff.textualField(elements[PageHtmlView.TARGET_COUNT], 5, HINT_USAGE_FORM),
-								app.ff.togglingCheckboxes(elements[PageHtmlView.TARGET_WRAP], HINT_BARE),
-								true ? null : app.ff.togglingButtons(elements[PageHtmlView.TARGET_WRAP], HINT_BARE),
+						return forStream?
+								app.ff.toolGroups(targeter, HINT_NONE,
+								app.ff.textualField(elements[TARGET_COUNT], 5, HINT_USAGE_FORM),
+								app.ff.togglingCheckboxes(elements[TARGET_WRAP], HINT_BARE),
+								true ? null : app.ff.togglingButtons(elements[TARGET_WRAP], HINT_BARE),
 								app.ff.spacerTall(30)
+						):app.ff.toolGroups(targeter, HINT_NONE,
+								app.ff.triggerButtons(elements[TARGET_EXPORT], HINT_BARE)
 						);
 					}
 				};

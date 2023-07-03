@@ -36,8 +36,8 @@ class DocTexts extends Tracer{
 		setStripperPage(pageAt);
 //		Times.printElapsed("getChars pageAt=" + pageAt);
 		extract.getForValues(pageAt);
-		PageChars pageChars = new PageChars(((List<PDPage>) (this.
-				doc).getDocumentCatalog().getAllPages()).get(pageAt),
+		PageChars pageChars = new PageChars(
+				((List<PDPage>) doc.getDocumentCatalog().getAllPages()).get(pageAt),
 				chars.getForValues(pageAt)
 		);
 //		Times.printElapsed("getChars-");
@@ -123,6 +123,10 @@ class DocTexts extends Tracer{
 			final int basePts = FacetFactory.fontSizes[FacetFactory.fontSizeAt];
 			final double unitPts = 12;
 			@Override
+			protected String pageTitle() {
+				return style.name();
+			}
+			@Override
 			protected String[] buildPageStyles(double points) {
 				return style != Stream ? new String[]{
 						"p{font-family:\"Times New Roman\",serif;font-size:" + usePts(14) + "pt}"
@@ -139,7 +143,8 @@ class DocTexts extends Tracer{
 			@Override
 			public String newPageContent() {
 				String raw = getPageText(pageAt, style);
-				return "<p>" + (style != Stream ? raw.replace("\n", "\n<p>")
+				if (style==Table)return raw;
+				else return "<p>" + (style != Stream ? raw.replace("\n", "\n<p>")
 						: replaceAll(raw, "\n", "\n<p>",
 						"\\(([^\\)]+)\\)", "(<i>$1</i>)"));
 			}
