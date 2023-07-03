@@ -105,7 +105,7 @@ class DocTexts extends Tracer{
 			setStripperPage(pageAt);
 			extract.getForValues(pageAt);
 			Coords coords = pageCoords.get(pageAt);
-			if (coords == null)throw new IllegalStateException("coords == null");
+			if (coords == null)return "[No coords]";
 			else return coords.constructTable(chars.getForValues(pageAt));
 		}
 		else try{

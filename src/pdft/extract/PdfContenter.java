@@ -38,6 +38,8 @@ final class PdfContenter extends ViewerContenter{
 	}
 	@Override
 	public void wasRemoved() {
+		for (Integer c:pageCoords.keySet())
+			if(pageCoords.get(c).isEmpty())pageCoords.remove(c);
 		try {
 			new ObjectOutputStream(new FileOutputStream(coordData))
 					.writeObject(pageCoords);

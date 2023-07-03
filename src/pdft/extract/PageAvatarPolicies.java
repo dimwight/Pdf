@@ -6,7 +6,6 @@ import facets.facet.app.FacetAppSurface;
 import facets.util.geom.Point;
 import facets.util.shade.Shade;
 import facets.util.shade.Shades;
-import pdft.extract.Coords.BoundsCell;
 
 import static facets.util.shade.Shades.*;
 import static pdft.extract.PageAvatarPolicies.ShadeState.*;

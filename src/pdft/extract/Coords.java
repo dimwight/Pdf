@@ -3,7 +3,6 @@ package pdft.extract;
 import facets.core.app.avatar.AvatarContent;
 import facets.core.app.avatar.PlaneView;
 import facets.util.StatefulCore;
-import facets.util.geom.Line;
 import org.apache.pdfbox.util.TextPosition;
 
 import java.util.*;
@@ -18,7 +17,7 @@ final class Coords extends StatefulCore {
         add(false, view);
     }
     void add(boolean forX, PlaneView view) {
-        int divisor = 25;
+        int divisor = 50;
         double at = forX ? view.showWidth() / divisor : view.showHeight() / divisor;
         (forX ? this.forX : this.forY).add(0, new Coord(forX, at));
         updateStateStamp();
@@ -52,7 +51,7 @@ final class Coords extends StatefulCore {
         List<Coord> useY = jumpZeroes(forY);
         List<AvatarContent> lines = new ArrayList();
         if (useX.size()<2||useY.size()<2) {
-            lines.add(new BoundsCell(new double[]{0,0,200,200}));
+            lines.add(new BoundsCell(new double[]{0,0,20,20}));
             return lines;
         }
         ListIterator<Coord> forY_ = useY.listIterator();
@@ -68,32 +67,16 @@ final class Coords extends StatefulCore {
                 Coord left = forX_.next();
                 Coord right = forX_.next();
                 if (forX_.hasNext())forX_.previous();
-                lines.add(new BoundsCell(left.getAt(),top.getAt(),right.getAt(),bottom.getAt(),chars));
-                sb.append(left+"" +top+ "<br>" +right+ "" +bottom+ "</td>");
+                BoundsCell cell = new BoundsCell(left.getAt(), top.getAt(),
+                        right.getAt(), bottom.getAt());
+                lines.add(cell);
+                sb.append(//left+"" +top+ "<br>" +right+ "" +bottom+ 
+                        cell.getText(chars)+ "</td>");
             }
             sb.append("</tr>");
         }
         sb.append("</table></body></html>");
         return lines;
-    }
-    static class BoundsCell implements AvatarContent {
-        final Line bounds;
-        BoundsCell(double[] vals) {
-            bounds = new Line(vals);
-        }
-        BoundsCell(double left, double top, double right, double bottom, List<TextPosition> chars) {
-            this(new double[]{left, top, right, bottom});
-            if (chars==null)return;
-            ListIterator<TextPosition> i = chars.listIterator();
-            while (i.hasNext()) {
-                TextPosition next = i.next();
-                float x = next.getX();
-                float y = next.getY();
-                if (x >bounds.from.x()&&x<bounds.to.x()
-                    &&y>bounds.from.y()&&y<bounds.to.y())
-                    i.remove();
-            }
-        }
     }
     String constructTable(List<TextPosition> chars) {
         sb=new StringBuilder("No table");
@@ -109,5 +92,14 @@ final class Coords extends StatefulCore {
                 jumped.add(next);
         }
         return jumped;
+    }
+    boolean isEmpty() {
+        boolean found=false;
+        for (AvatarContent c:getAll()){
+            if(!(c instanceof Coord))continue;
+            Coord check= (Coord) c;
+            found|=check.isLive();
+        }
+        return !found;
     }
 }
