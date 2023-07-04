@@ -107,7 +107,11 @@ final class PagePainters extends Tracer implements SizeEstimable{
 					throw new RuntimeException(e);
 				}
 				if(!fullChars.isEmpty())return;
-				Collections.sort(texts,new TextPositionComparator());
+				try {
+					Collections.sort(texts,new TextPositionComparator());
+				} catch (Exception e) {
+					trace(": ",e,false);
+				}
 				for(TextPosition t:texts)
 					fullChars.add(new PageChar(t,rotation,colors.get(t).getRGB(),false));
 			}};

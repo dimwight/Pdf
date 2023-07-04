@@ -88,9 +88,6 @@ final class CosTreeView extends SelectionView{
 	}
 	@Override
 	final public SSelection newViewerSelection(SViewer viewer,final SSelection viewable){
-		return newSelection(style,viewable);
-	}
-	private static SSelection newSelection(final TreeStyle style,final SSelection viewable){
 		final PDDocument doc= (PDDocument) viewable.content();
 		final COSArray array=new COSArray();
 		for(Object each:doc.getDocumentCatalog().getAllPages())
@@ -99,8 +96,8 @@ final class CosTreeView extends SelectionView{
 			@Override
 			public Object content(){
 				COSDocument cos = doc.getDocument();
-				if(style!= TreeStyle.Pages)
-					return style== TreeStyle.Document?cos:cos.getTrailer();
+				if(style != TreeStyle.Pages)
+					return style == TreeStyle.Document?cos:cos.getTrailer();
 				return array;
 			}
 			@Override

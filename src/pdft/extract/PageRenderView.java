@@ -49,13 +49,12 @@ final class PageRenderView extends PlaneViewWorks {
         super("Re&nder", 0, 0, new Vector(0, 0), avatars);
         this.pageCoords = pageCoords;
     }
-    void setToPage(PDPage page) {
+    void setToPage(PDPage page, int at) {
         boolean rotated = page.findRotation() != 0;
         Dimension size = page.findMediaBox().createDimension();
         double across = rotated ? size.height : size.width, down = rotated ? size.width
                 : size.height;
         setShowValues(across, down, new Vector(0,0), 1);
-        int at = page.getParent().getKids().indexOf(page);
         coords = pageCoords.get(at);
         if(coords==null)pageCoords.put(at,coords=new Coords(this));
     }

@@ -66,7 +66,7 @@ class DocTexts extends Tracer{
 					stripChars.addAll(charactersByArticle.get(0));
 				}
 			};
-		}catch(IOException e){
+		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
 		extract =new ItemProvider<String>(cache,this,"Text") {
@@ -75,7 +75,12 @@ class DocTexts extends Tracer{
 				try {
 					return stripper.getText(DocTexts.this.doc);
 				}catch(Exception e){
-					throw new RuntimeException(e);
+					if (false) {
+						throw new RuntimeException(e);
+					} else {
+						trace(": ",e,false);
+						return "Exception: "+e.getMessage();
+					}
 				}
 			}
 		};
@@ -105,7 +110,8 @@ class DocTexts extends Tracer{
 			setStripperPage(pageAt);
 			extract.getForValues(pageAt);
 			Coords coords = pageCoords.get(pageAt);
-			if (coords == null)return "[No coords]";
+			if (coords == null)
+				return "[No coords]";
 			else return coords.constructTable(chars.getForValues(pageAt));
 		}
 		else try{

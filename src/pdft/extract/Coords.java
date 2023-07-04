@@ -54,9 +54,10 @@ final class Coords extends StatefulCore {
             lines.add(new BoundsCell(0,0,20,20));
             return lines;
         }
-        ArrayList<TextPosition> chars_ = new ArrayList<>(chars);
+        ArrayList<TextPosition> chars_ = chars==null?null:
+                new ArrayList<>(chars);
         ListIterator<Coord> forY_ = useY.listIterator();
-        sb = new StringBuilder("<html><head></head><body><table>\n");
+        sb = new StringBuilder("<html><head></head><body><table border=1 cellspacing=0>\n");
         while (forY_.hasNext()) {
             sb.append("<tr>\n");
             Coord top = forY_.next();
@@ -71,7 +72,7 @@ final class Coords extends StatefulCore {
                 BoundsCell cell = new BoundsCell(left.getAt(), top.getAt(),
                         right.getAt(), bottom.getAt());
                 lines.add(cell);
-                sb.append(cell.getText(chars_)+ "</td>\n");
+                if (chars_!=null) sb.append(cell.getText(chars_)+ "</td>\n");
             }
             sb.append("</tr>\n");
         }
@@ -80,9 +81,9 @@ final class Coords extends StatefulCore {
     }
     String constructTable(List<TextPosition> chars) {
         sb=new StringBuilder("No table");
-        Times.printElapsed("constructTable");
+//        Times.printElapsed("constructTable");
         newBoundsCells(chars);
-        Times.printElapsed("~constructTable");
+//        Times.printElapsed("~constructTable");
         return sb.toString();
     }
     private List<Coord> jumpZeroes(List<Coord> zeroed) {
